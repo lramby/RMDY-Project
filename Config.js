@@ -32,6 +32,22 @@ const CONFIG = {
         COST: 10,
         NOTE: 11
       }
+    },
+	DETAILS: {
+      NAME: "Equipment",
+      COLUMNS: {
+        PID: 0,
+        ADDRESS1: 1,
+        ADDRESS2: 2,
+        CITY: 3,
+        STATE: 4,
+        ZIP: 5,
+        COUNTRY: 6,
+        CUSTOMERFIRST: 7,
+        CUSTOMERLAST: 8,
+        CUSTOMEREMAIL: 9,
+        CUSTOMERPHONE: 10
+      }
     }
   },
   PAGES: {
@@ -56,6 +72,17 @@ const CONFIG = {
       showBtn: true,
       scripts: ['JS_Tasks', 'JS_Tasks_Modal'],
       title: 'Tasks'
+    },
+	DETAILS: {
+      template: 'Page_Tasks',
+      btn: 'Edit Detail',
+      action: 'openDetailModal()',
+      handler: 'renderDetails',
+      server: 'getDetailsData',   
+      icon: 'bi bi-pencil',
+      showBtn: true,
+      scripts: ['JS_Tasks', 'JS_Tasks_Modal'],
+      title: 'Details'
     }
   },
   FORMAT: {
