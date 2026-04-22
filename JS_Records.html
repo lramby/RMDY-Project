@@ -1,0 +1,82 @@
+<script>
+  let recGlobalList = [];
+  let recTasks = [];
+
+  function initRecords() {
+    console.log("Records page initializing...");
+    loadRecords();
+  }
+
+  function showRecords(data) {
+    renderRecords(data);
+  }
+
+  function loadRecords() {
+    const loader = document.getElementById('records-loader');
+    const content = document.getElementById('records-content');
+    if (loader) loader.style.display = 'block';
+    if (content) content.style.display = 'none';
+    
+    google.script.run
+      .withSuccessHandler(renderRecords)
+      .withFailureHandler(err => {
+        console.error("Records Load Error:", err);
+        if (loader) loader.innerHTML = `<div class="alert alert-danger">Error: ${err.message}</div>`;
+      })
+      .getRecordsData();
+  } 
+
+  function renderRecords(data) {
+    const loader = document.getElementById('records-loader');
+    const content = document.getElementById('records-content');
+    const tbody = document.getElementById('records-table-body');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
+    
+    recGlobalList = data || [];
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (recGlobalList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No records found.</td></tr>`;
+      return;
+    }
+    
+    recGlobalList.forEach((r) => {
+      const taskDisplay = r.roomName ? `${r.taskName} (${r.roomName})` : r.taskName;
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td><strong>${r.readingType}</strong></td>
+              </tr>
+              <tr>
+                <td>Record Type: <span class="fw-semibold">${r.recordType}</td>
+              </tr>
+              <tr>
+                <td>Day: <span class="fw-semibold">${r.day}</span></td>
+              </tr>
+              <tr>
+                <td>Value: <span class="fw-semibold">${r.value}</span></td>
+              </tr>
+              <tr>
+                <td>Task: <span class="fw-semibold">${r.taskName}</span></td>
+              </tr>
+              <tr>
+                <td>Room: <span class="fw-semibold">${r.roomName}</span></td>
+              </tr>
+            </table>
+          </td>
+          
+          
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditRecord(${r.sheetRow})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteRecord(${r.sheetRow})"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>`);
+    });
+  }
+
+</script>

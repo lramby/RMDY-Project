@@ -1,0 +1,68 @@
+<script>
+  var currentInvoices = []; 
+
+  function loadInvoices() {
+    const loader = document.getElementById('inv-loader');
+    if (loader) loader.style.display = 'block';
+    
+    google.script.run
+      .withSuccessHandler(renderInvoices) // Corrected name
+      .getInvoicesData();
+  }
+
+  function renderInvoices(data) {
+    const loader = document.getElementById('inv-loader');
+    const tbody = document.getElementById('invoice-table-body');
+    const container = document.getElementById('inv-table-container');
+    
+    if (loader) loader.style.display = 'none';
+    if (container) container.style.display = 'block';
+    
+    currentInvoices = data || [];
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (currentInvoices.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No invoices found.</td></tr>';
+      return;
+    }
+
+    currentInvoices.forEach(function(inv) {
+      const due = parseFloat(String(inv.amountDue).replace(/[$,]/g, '')) || 0;
+      const borderClass = due > 0 ? 'border-danger' : 'border-success';
+
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="g-0">
+          <td>
+            <div class="d-flex align-items-start w-100 p-2 border-start border-5 ${borderClass}">
+              
+              <div class="flex-grow-1">
+                <div class="row g-2">
+                  <div class="col-12 col-md-4">
+                    <div>Number: <strong>${inv.number || 'Unknown Company'}</strong></div>
+                    <div>Date: <strong>${inv.date || ''}</strong></div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div>Total: <strong>${parseFloat(inv.total).toFixed(2)}</strong></div>
+                    <div class="text-truncate ${due > 0 ? 'text-danger' : 'text-success'}">Due: <strong>$${due.toFixed(2)}</strong></div>
+                    <div>Note:  <strong class="text-wrap">${inv.note || ''}</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ms-3 d-flex flex-column gap-1" style="min-width: 40px;">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditInvoice(${inv.sheetRow})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteInvoice(${inv.sheetRow}, '${inv.invoiceId}')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+        `);
+    });
+  }
+</script>

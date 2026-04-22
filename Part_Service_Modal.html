@@ -1,0 +1,61 @@
+<div class="modal fade" id="serviceModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Service Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="serviceEditForm">
+          <div class="row">
+
+            <div class="col-md-4 mb-3">
+              <label class="form-label small fw-bold">Service Type</label>
+              <select id="edit-service-type" class="form-select">
+                <option value="" disabled selected>Loading...</option>
+              </select>
+              <div class="invalid-feedback">Please select a type.</div>
+            </div>
+
+            <div class="col-md-4 mb-3"><label class="form-label small fw-bold">Monitor</label><input type="text" id="edit-monitor" class="form-control"></div>
+            <div class="col-md-4 mb-3"><label class="form-label small fw-bold">Drive Time</label><input type="text" id="edit-drivetime" class="form-control"></div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-bold">Setup</label>
+              <select id="edit-setup" class="form-select">
+                <option value="" disabled selected>Loading...</option>
+              </select>
+              <div class="invalid-feedback">Please select a setup.</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-bold">Takedown</label>
+              <select id="edit-takedown" class="form-select">
+                <option value="" disabled selected>Loading...</option>
+              </select>
+              <div class="invalid-feedback">Please select a takedown.</div>
+            </div>
+
+            
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-bold">Thermal Treatment</label>
+              <select id="edit-thermal" class="form-select"><option value="">Loading...</option></select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small fw-bold">Fogging / Ozone</label>
+              <select id="edit-fog" class="form-select"><option value="">Loading...</option></select>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label small fw-bold">Description</label>
+              <textarea id="edit-description" class="form-control" rows="4"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary px-4" id="serviceSaveBtn" onclick="submitServiceEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>

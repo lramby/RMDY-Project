@@ -1,0 +1,78 @@
+<script>
+  let currentEquipList = []; // This stores your data for the Edit function
+  let equipProjectTasks = [];
+
+  function renderEquipment(equipment) {
+    const loader = document.getElementById('equipment-loader');
+    const content = document.getElementById('equipment-content');
+    const noSel = document.getElementById('equipment-no-selection');
+    const tbody = document.getElementById('equipment-table-body');
+
+    if (loader) loader.style.display = 'none';
+
+    // Check against the parameter passed into the function
+    if (equipment === null) {
+      if (noSel) noSel.style.display = 'block';
+      if (content) content.style.display = 'none';
+      return;
+    }
+
+    if (noSel) noSel.style.display = 'none';
+    if (content) content.style.display = 'block';
+
+    // Store in global variable for use by handleEditEquipment
+    currentEquipList = equipment || [];
+    
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (currentEquipList.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No equipment found.</td></tr>`;
+      return;
+    }
+
+    currentEquipList.forEach((m) => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="align-middle">
+          <td class="p-0"> 
+            <div class="d-flex align-items-center w-100 p-3">
+              <div class="flex-grow-1">
+                <div class="row g-3">
+                  
+                  <div class="col-12 col-md-6">
+                    <div class="fw-bold text-primary">${m.item}</div>
+                    <div class="small text-muted text-wrap">Note: ${m.note || '---'}</div>
+                    <div class="small mt-1">
+                      <span class="badge bg-light text-dark border">${m.roomName}</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6 border-start border-md-start">
+                    <div class="">Qty: <span class="fw-bold">${m.value} ${m.unit}</span></div>
+                    <div class="">Price: <span class="fw-bold">${m.price}</span> 
+                      <span class="text-muted" style="font-size: 0.75rem;">(Sub: ${m.priceSubTotal})</span>
+                    </div>
+                    <div class="">Cost: <span class="fw-bold">${m.cost}</span>
+                      <span class="text-muted" style="font-size: 0.75rem;">(Sub: ${m.costSubTotal})</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="ms-3 d-flex flex-column gap-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="handleEditEquipment(${m.sheetRow})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteEquipment(${m.sheetRow})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+      `);
+    });
+  }
+</script>

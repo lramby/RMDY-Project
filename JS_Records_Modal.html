@@ -1,0 +1,84 @@
+<script>
+function openRecordModal() {
+    loadDropdownCache(() => {
+      populateSelect('rec-type', 'RecordType');
+      populateSelect('rec-reading', 'ReadingType');
+      
+      google.script.run.withSuccessHandler(tasks => {
+        recTasks = tasks || [];
+        const select = document.getElementById('rec-task-select');
+        select.innerHTML = recTasks.map(t => `<option value="${t.taskId}">${t.taskType} (${t.roomName})</option>`).join('');
+        
+        document.getElementById('rec-sheet-row').value = "";
+        document.getElementById('rec-day').value = "";
+        document.getElementById('rec-value').value = "";
+        document.getElementById('rec-note').value = "";
+        document.getElementById('recModalTitle').innerText = "Add Record";
+        
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('recordModal')).show();
+      }).getTasksData();
+    });
+  }
+
+  function processSaveRecord() {
+    const btn = document.getElementById('recSaveBtn');
+    const taskSelect = document.getElementById('rec-task-select');
+    const selectedTask = recTasks.find(t => String(t.taskId) === String(taskSelect.value));
+
+    const recObj = {
+      sheetRow: document.getElementById('rec-sheet-row').value,
+      recordType: document.getElementById('rec-type').value,
+      readingType: document.getElementById('rec-reading').value,
+      day: document.getElementById('rec-day').value,
+      value: document.getElementById('rec-value').value,
+      taskId: taskSelect.value,
+      taskName: selectedTask ? selectedTask.taskType : "",
+      roomName: selectedTask ? selectedTask.roomName : "",
+      roomId: selectedTask ? selectedTask.roomId : "",
+      note: document.getElementById('rec-note').value
+    };
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    google.script.run
+      .withSuccessHandler(() => {
+        btn.disabled = false;
+        btn.innerText = 'Save';
+        loadRecords();
+        bootstrap.Modal.getInstance(document.getElementById('recordModal')).hide();
+      })
+      .saveRecordData(recObj);
+  }
+
+  function handleDeleteRecord(row) {
+    if (confirm("Delete this record?")) {
+      google.script.run.withSuccessHandler(() => loadRecords()).deleteRecord(row);
+    }
+  }
+
+  function handleEditRecord(row) {
+    const rec = recGlobalList.find(r => r.sheetRow == row);
+    if (!rec) return;
+    
+    loadDropdownCache(() => {
+      populateSelect('rec-type', 'RecordType', rec.recordType);
+      populateSelect('rec-reading', 'ReadingType', rec.readingType);
+      
+      google.script.run.withSuccessHandler(tasks => {
+        recTasks = tasks || [];
+        const select = document.getElementById('rec-task-select');
+        select.innerHTML = recTasks.map(t => `<option value="${t.taskId}">${t.taskType} (${t.roomName})</option>`).join('');
+        
+        document.getElementById('rec-sheet-row').value = rec.sheetRow;
+        document.getElementById('rec-day').value = rec.day;
+        document.getElementById('rec-value').value = rec.value;
+        document.getElementById('rec-task-select').value = rec.taskId;
+        document.getElementById('rec-note').value = rec.note;
+        document.getElementById('recModalTitle').innerText = "Edit Record";
+        
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('recordModal')).show();
+      }).getTasksData();
+    });
+  }
+</script>

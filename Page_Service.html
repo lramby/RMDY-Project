@@ -1,0 +1,66 @@
+<div class="container-fluid p-3">
+
+  <div id="service-loader" class="text-center mt-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-2">Loading service details...</p>
+  </div>
+
+  <div id="service-no-selection" class="alert alert-warning shadow-sm" style="display:none;">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    No active project selected. Please go to <strong>Manage</strong> first.
+  </div>
+
+  <div id="service-content" style="display:none;">
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Service Type</div>
+        <div id="display-service-type" class="fs-5 fw-semibold dynamic-text"></div>
+      </div>
+      <div class="d-none col-md-6 mb-4 text-md-end">
+         <div class="text-uppercase small fw-bold text-muted mb-1">Project ID</div>
+         <div id="service-pid" class="badge border border-dark text-dark px-3 py-2"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Setup</div>
+        <div id="display-setup" class="fs-5 dynamic-text"></div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Takedown</div>
+        <div id="display-takedown" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Monitor</div>
+        <div id="display-monitor" class="fs-5 dynamic-text"></div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Drive Time</div>
+        <div id="display-drivetime" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Thermal Treatment</div>
+        <div id="display-thermal" class="fs-5 dynamic-text"></div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Fogging / Ozone</div>
+        <div id="display-fog" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Description</div>
+        <div id="display-description" class="fs-5 dynamic-text" style="white-space: pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+

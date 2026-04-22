@@ -1,0 +1,78 @@
+<script>
+  let currentInsurances = []; // Global scope
+
+  function initInsurance() {
+    loadInsurance();
+  }
+
+  function loadInsurance() {
+    const loader = document.getElementById('insurance-loader');
+    const content = document.getElementById('insurance-content');
+    
+    if (loader) loader.style.display = 'block';
+    if (content) content.style.display = 'none';
+    
+    google.script.run
+      .withSuccessHandler(renderInsurance)
+      .getInsuranceData();
+  } 
+
+  function renderInsurance(data) {
+    // Explicitly set the global variable
+    currentInsurances = data || []; 
+    console.log("Data in Browser:", currentInsurances);
+
+    const loader = document.getElementById('insurance-loader');
+    const content = document.getElementById('insurance-content');
+    const tbody = document.getElementById('insurance-table-body');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+
+    if (currentInsurances.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-4">No insurance records found for this project.</td></tr>`;
+      return;
+    }
+    
+    currentInsurances.forEach((ins) => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="g-0">
+          <td>
+            <div class="d-flex align-items-start w-100 p-2">
+              
+              <div class="flex-grow-1">
+                <div class="row g-2">
+                  <div class="col-12 col-md-4">
+                    <div>Provider: <strong>${ins.company || 'Unknown Company'}</strong></div>
+                    <div>Type/DoL: <strong>${ins.type || ''}${ins.type && ins.dateLoss ? ' | ' : ''}${ins.dateLoss || ''}</strong></div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div>Insured: <strong>${ins.firstName || ''} ${ins.lastName || ''}</strong></div>
+                    <div class="text-truncate">Email: <strong>${ins.email || ''}</strong></div>
+                  </div>
+                  <div class="col-12 col-md-4">
+                    <div class="text-primary small fw-bold">Claim: ${ins.claim || '---'}</div>
+                    <div class="text-primary small fw-bold">Policy: ${ins.policy || '---'}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ms-3 d-flex flex-column gap-1" style="min-width: 40px;">
+                <button class="btn btn-sm btn-outline-primary" onclick="handleEditInsurance(${ins.sheetRow})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteInsurance(${ins.sheetRow})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+
+            </div>
+          </td>
+        </tr>
+      `);
+    });
+  }
+</script>

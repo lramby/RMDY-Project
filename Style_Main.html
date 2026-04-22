@@ -1,0 +1,181 @@
+<style>
+  :root {
+    --bs-primary: #00B4D8;
+    --bs-primary-rgb: 0, 180, 216; /* Necessary for some Bootstrap utility classes */
+  }
+
+.btn-primary {
+  background-color: var(--bs-primary) !important; //#ff5733 !important;
+  border-color: var(--bs-primary) !important; //#ff5733 !important;
+}
+
+.btn-outline-primary {
+  border-color: var(--bs-primary) !important; //#ff5733 !important;
+  color: var(--bs-primary);
+}
+
+.btn-outline-primary:hover {
+  border-color: var(--bs-primary) !important; //#ff5733 !important;
+  background-color: var(--bs-primary) !important; //#ff5733 !important;
+  color: #fff;
+}
+
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body { 
+  background-color: #1a1d20; 
+  font-family: 'Segoe UI', sans-serif; 
+  font-size: 0.9rem;
+  color: #333333;
+}
+
+/* Updated Sidebar: Fixed height and Flex layout */
+#sidebar { 
+  display: flex; 
+  flex-direction: column;
+  min-width: 250px; 
+  max-width: 250px; 
+  height: 100vh;      /* Change from min-height to height */
+  background: #F8F9FA; //#212529; 
+  color: #333333; //#fff;
+  z-index: 1050;
+  overflow: hidden;   /* Prevents the whole sidebar from having a scrollbar */
+}
+
+/* NEW: The middle container that actually scrolls */
+.nav-scroll-container {
+  flex-grow: 1;       /* Take up all space between header and footer */
+  overflow-y: auto;   /* Enable vertical scrolling */
+  overflow-x: hidden;
+}
+
+/* Optional: Slim custom scrollbar for the sidebar */
+.nav-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+.nav-scroll-container::-webkit-scrollbar-thumb {
+  background: #F8F9FA; //rgba(255,255,255,0.1);
+  border-radius: 10px;
+}
+
+/*Logo area*/
+.app-header {
+  height: 50px;
+  padding: 0 20px; 
+  display: flex;
+  align-items: center;
+  background: #F8F9FA; //#1a1d20;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+
+.app-brand {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #333333; //#fff;
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+}
+
+#sidebar .nav-link {
+  color: #333333; //rgba(255,255,255,.7);
+  padding: 10px 20px;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+#sidebar .nav-link:hover {
+  color: #222222;
+  background: #ADE8F4; //rgba(255,255,255,.1);
+  border-left: 4px solid #00B4D8; //#0d6efd;
+}
+
+#sidebar .nav-link.active {
+  color: #fff;
+  background: #7D7D7D; //rgba(255,255,255,.1);
+  border-left: 4px solid #00B4D8; //#0d6efd;
+  }
+
+.content-area { 
+  flex-grow: 1; 
+  padding: 20px; 
+  background-color: white; //#f4f7f6; 
+  min-height: 100vh;
+}
+
+/* Mobile Header Logic */
+.mobile-header {
+  height: 60px;
+  background-color: #F8F9FA; //#1a1d20;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1040;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.mobile-hamburger {color: #333333;}
+
+/* Mobile Responsive Overrides */
+@media (max-width: 767.98px) {
+  #sidebar {
+    position: fixed;
+    left: -250px; /* Hide off-screen */
+    top: 0;
+    height: 100vh;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+  }
+
+  #sidebar.active {
+    left: 0; /* Slide in */
+  }
+
+  #sidebar-overlay.active {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.6);
+    z-index: 1045;
+  }
+
+  .content-area {
+    margin-top: 60px;
+    padding: 15px;
+  }
+
+  #sidebar-overlay { display: none; }
+
+  .border-md-start {
+    border-left: 0 !important;
+  }
+}
+
+/* Data Styling */
+.badge-water { background-color: #007bff; color: white; }
+.badge-fire { background-color: #dc3545; color: white; }
+.badge-gen { background-color: #6c757d; color: white; }
+.copy { color: gray; font-size: 0.8rem; }
+p, div, td, span { line-height: 1.4; }
+
+
+.selected-row {
+    background-color: #e8f0fe !important; /* Light blue highlight */
+    border-left: 5px solid var(--bs-primary);       /* Blue accent bar */
+  }
+
+
+</style>
+
+
+
+
+
+

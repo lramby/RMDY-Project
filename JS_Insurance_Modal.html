@@ -1,0 +1,87 @@
+<script>
+  /**
+   * Action called by "Add Insurance"
+   */
+  function openInsuranceModal() {
+    const modalElt = document.getElementById('insuranceModal');
+    const form = document.getElementById('insuranceEditForm');
+    if (form) form.reset();
+
+    document.getElementById('ins-sheet-row').value = "";
+    document.getElementById('ins-id-hidden').value = "INS-" + Date.now();
+    document.getElementById('insModalTitle').innerText = "Add Insurance Provider";
+    document.getElementById('display-date-loss-ref').innerText = "N/A (New Record)";
+
+    bootstrap.Modal.getOrCreateInstance(modalElt).show();
+  }
+
+  function handleEditInsurance(row) {
+    const ins = currentInsurances.find(i => i.sheetRow == row);
+    if (!ins) return;
+
+    // Direct mapping to the IDs in the restored modal
+    document.getElementById('ins-sheet-row').value = ins.sheetRow;
+    document.getElementById('ins-id-hidden').value = ins.insuranceId;
+    document.getElementById('ins-company').value = ins.company || "";
+    document.getElementById('ins-type').value = ins.type || "";
+    document.getElementById('ins-policy').value = ins.policy || "";
+    document.getElementById('ins-claim').value = ins.claim || "";
+    document.getElementById('ins-date').value = ins.dateLoss || "";
+    document.getElementById('ins-first-name').value = ins.firstName || "";
+    document.getElementById('ins-last-name').value = ins.lastName || "";
+    document.getElementById('ins-email').value = ins.email || "";
+    
+    // Original requirement to display the Dates table reference
+    document.getElementById('display-date-loss-ref').innerText = ins.dateLossRef || "N/A";
+
+    document.getElementById('insModalTitle').innerText = "Edit Insurance Provider";
+    const modalElt = document.getElementById('insuranceModal');
+    bootstrap.Modal.getOrCreateInstance(modalElt).show();
+  }
+
+  function processSaveInsurance() {
+    const btn = document.getElementById('insSaveBtn');
+    const insObj = {
+      sheetRow: document.getElementById('ins-sheet-row').value,
+      insuranceId: document.getElementById('ins-id-hidden').value,
+      company: document.getElementById('ins-company').value,
+      type: document.getElementById('ins-type').value,
+      policy: document.getElementById('ins-policy').value,
+      claim: document.getElementById('ins-claim').value,
+      dateLoss: document.getElementById('ins-date').value,
+      firstName: document.getElementById('ins-first-name').value,
+      lastName: document.getElementById('ins-last-name').value,
+      email: document.getElementById('ins-email').value
+    };
+
+    if (!insObj.company) { alert("Please enter an insurance company."); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    google.script.run
+      .withSuccessHandler(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-save me-1"></i> Save Insurance';
+        bootstrap.Modal.getInstance(document.getElementById('insuranceModal')).hide();
+        // Base pattern: Refresh via Router definition
+        google.script.run.withSuccessHandler(renderInsurance).getInsuranceData();
+      })
+      .withFailureHandler(err => {
+        alert("Save failed: " + err.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Save Insurance';
+      })
+      .updateInsuranceData(insObj);
+  }
+
+  function handleDeleteInsurance(row) {
+    if (confirm("Permanently delete this insurance provider?")) {
+      google.script.run
+        .withSuccessHandler(() => {
+           google.script.run.withSuccessHandler(renderInsurance).getInsuranceData();
+        })
+        .deleteInsuranceRow(row);
+    }
+  }
+</script>

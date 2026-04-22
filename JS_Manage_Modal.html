@@ -1,0 +1,94 @@
+<script>
+/**
+ * JS_Manage_Modal.html
+ * Handles ONLY the Edit and New Project Modals
+ */
+
+function openEditProjectModal() {
+  // Uses the manageDataList defined in JS_Manage
+  const selected = manageDataList.find(item => item.isChecked);
+  
+  if (!selected) {
+    alert("Please select a project from the list first.");
+    return;
+  }
+
+  document.getElementById('edit-rowIndex').value = selected.rowIndex;
+  document.getElementById('edit-claim').value = selected.claim;
+  document.getElementById('edit-policy').value = selected.policy;
+  document.getElementById('edit-status').value = selected.status;
+
+  const modal = new bootstrap.Modal(document.getElementById('editProjectModal'));
+  modal.show();
+}
+
+function submitEditProject() {
+  const btn = document.getElementById('updateBtn');
+  btn.disabled = true;
+  
+  const payload = {
+    rowIndex: document.getElementById('edit-rowIndex').value,
+    claim: document.getElementById('edit-claim').value,
+    policy: document.getElementById('edit-policy').value,
+    status: document.getElementById('edit-status').value
+  };
+
+  google.script.run
+    .withSuccessHandler(function(updatedData) {
+      bootstrap.Modal.getInstance(document.getElementById('editProjectModal')).hide();
+      btn.disabled = false;
+      renderTable(updatedData); 
+    })
+    .updateManageRow(payload);
+}
+
+function initManagePage() {
+  google.script.run
+    .withSuccessHandler(populateClientDropdown)
+    .getContactCompanies();
+}
+
+function populateClientDropdown(companies) {
+  const dropdown = document.getElementById('new-client');
+  if (!dropdown) return;
+  dropdown.innerHTML = '<option value="" selected disabled>Select a client...</option>';
+  companies.forEach(company => {
+    const option = document.createElement('option');
+    option.value = company;
+    option.textContent = company;
+    dropdown.appendChild(option);
+  });
+}
+
+function openNewProjectModal() {
+  document.getElementById('newProjectForm').reset();
+  initManagePage(); 
+  const modal = new bootstrap.Modal(document.getElementById('newProjectModal'));
+  modal.show();
+}
+
+function submitNewProject() {
+  const btn = document.getElementById('createBtn');
+  const client = document.getElementById('new-client').value;
+  if (!client) { alert("Please select a client."); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating...';
+
+  const formData = {
+    client: client,
+    claim: document.getElementById('new-claim').value,
+    policy: document.getElementById('new-policy').value,
+    type: document.getElementById('new-type').value
+  };
+
+  google.script.run
+    .withSuccessHandler(function(updatedData) {
+      bootstrap.Modal.getInstance(document.getElementById('newProjectModal')).hide();
+      btn.disabled = false;
+      btn.innerText = 'Create Project';
+      renderTable(updatedData);
+    })
+    .createNewProject(formData);
+}
+</script>

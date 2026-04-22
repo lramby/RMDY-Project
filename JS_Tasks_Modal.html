@@ -1,0 +1,87 @@
+<script>
+
+  function openTaskModal(index = null) {
+    loadDropdownCache(() => {
+      const form = document.getElementById('taskEditForm');
+      if (form) form.reset();
+      
+      populateSelect('edit-task-type', 'Tasks');
+
+      if (index !== null) {
+        // EDIT MODE
+        const task = currentTasks[index];
+        document.getElementById('taskModalTitle').innerText = "Edit Task";
+        document.getElementById('task-row-index').value = task.sheetRow;
+        document.getElementById('task-unique-id').value = task.taskId || "";
+        document.getElementById('edit-task-value').value = task.value;
+        document.getElementById('edit-task-type').value = task.taskType;
+        loadRoomDropdown(task.roomId);
+      } else {
+        // ADD MODE
+        document.getElementById('taskModalTitle').innerText = "Add New Task";
+        document.getElementById('task-row-index').value = ""; 
+        document.getElementById('task-unique-id').value = "";
+        loadRoomDropdown(""); 
+      }
+
+      const modalElt = document.getElementById('taskModal');
+      bootstrap.Modal.getOrCreateInstance(modalElt).show();
+    });
+  }
+
+
+  function submitTaskEdit() {
+    const btn = document.getElementById('taskSaveBtn');
+    const taskObj = {
+      sheetRow: document.getElementById('task-row-index').value,
+      taskId: document.getElementById('task-unique-id').value,
+      roomId: document.getElementById('edit-task-room').value,
+      taskType: document.getElementById('edit-task-type').value,
+      value: document.getElementById('edit-task-value').value
+    };
+
+    if (!taskObj.taskType) {
+      alert("Please select a task type.");
+      return;
+    }
+
+    btn.disabled = true;
+    google.script.run
+      .withSuccessHandler(function(updatedTasks) {
+        bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
+        btn.disabled = false;
+        showTasks(updatedTasks);
+      })
+      .saveTask(taskObj);
+  }
+
+  function handleDeleteTask(row) {
+    if (confirm("Permanently delete this task?")) {
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if (response && response.success === false) {
+            alert("⚠️ " + response.error);
+            return;
+          }
+          google.script.run.withSuccessHandler(showTasks).getTasksData();
+        })
+        .deleteTask(row);
+    }
+  }
+
+  function loadRoomDropdown(selectedRoomId = "") {
+    const select = document.getElementById('edit-task-room');
+    if (!select) return;
+    google.script.run.withSuccessHandler((options) => {
+      select.innerHTML = '<option value="">-- No Room Assigned --</option>';
+      options.forEach(opt => {
+        const el = document.createElement('option');
+        el.value = opt.id;
+        el.textContent = opt.display;
+        if (opt.id === selectedRoomId) el.selected = true;
+        select.appendChild(el);
+      });
+    }).getRoomOptionsForTask();
+  }
+  
+</script>

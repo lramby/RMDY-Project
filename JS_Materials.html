@@ -1,0 +1,72 @@
+<script>
+  let currentMaterials = [];
+  let currentProjectTasks = []; // GLOBAL: Essential for finding room details on save
+
+  function initMaterials() {
+    loadMaterials();
+  }
+
+  function loadMaterials() {
+    const loader = document.getElementById('materials-loader');
+    const content = document.getElementById('materials-content');
+    
+    if (loader) loader.style.display = 'block';
+    if (content) content.style.display = 'none';
+    
+    google.script.run
+      .withSuccessHandler(renderMaterials)
+      .withFailureHandler(err => {
+        console.error("Server Error:", err);
+        if (loader) {
+          loader.innerHTML = `<div class="alert alert-danger mx-3"><strong>Server Error:</strong> ${err.message}</div>`;
+        }
+      })
+      .getMaterialsData();
+  } 
+
+  function renderMaterials(data) {
+    const loader = document.getElementById('materials-loader');
+    const content = document.getElementById('materials-content');
+    const tbody = document.getElementById('material-table-body');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
+    
+    currentMaterials = data || [];
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (currentMaterials.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No materials found.</td></tr>`;
+      return;
+    }
+    
+    currentMaterials.forEach((m) => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td><strong>${m.item}</strong></td>
+              </tr>
+              <tr>
+                <td>Quantity: <span class="fw-semibold">${m.qty}</span></td>
+              </tr>
+              <tr>
+                <td>Task: <span class="fw-semibold">${m.taskName}</span></td>
+              </tr>
+              <tr>
+                <td>Room: <span class="fw-semibold">${m.roomName}</span></td>
+              </tr>
+            </table>
+          </td>
+          
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditMaterial(${m.sheetRow})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteMaterial(${m.sheetRow})"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>`);
+    });
+  }
+
+</script>

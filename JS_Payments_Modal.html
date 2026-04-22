@@ -1,0 +1,103 @@
+<script>
+/**
+ * OPEN MODAL: Now accepts an optional invoice number to select after loading.
+ */
+function openPaymentModal(invToSelect = null) {
+  const modalEl = document.getElementById('paymentModal');
+  const invDropdown = document.getElementById('pay-invoice');
+  
+  if (!paymentModalInstance) {
+    paymentModalInstance = new bootstrap.Modal(modalEl);
+  }
+
+  // Reset form and show loading state
+  document.getElementById('paymentForm').reset();
+  document.getElementById('pay-sheet-row').value = '';
+  invDropdown.innerHTML = '<option value="">Loading invoices...</option>';
+
+  // Inside openPaymentModal
+  google.script.run
+    .withSuccessHandler(function(invoices) {
+      if (!invoices || invoices.length === 0) {
+        invDropdown.innerHTML = '<option value="">No invoices found</option>';
+      } else {
+        invDropdown.innerHTML = '<option value="" selected disabled>Select an Invoice</option>';
+        invoices.forEach(inv => {
+          // Use the ID as the value, but the Number as the display text
+          invDropdown.innerHTML += `<option value="${inv.number}" data-id="${inv.id}">${inv.number}</option>`;
+        });
+        if (invToSelect) invDropdown.value = invToSelect;
+      }
+    })
+    .getInvoiceNumbersForActiveProject();
+
+  paymentModalInstance.show();
+}
+
+/**
+ * EDIT INITIATION
+ */
+function handleEditPayment(row) {
+  google.script.run.withSuccessHandler(function(data) {
+    // FIX: Check both array and object styles
+    const payments = Array.isArray(data) ? data : (data.payments || []);
+    const p = payments.find(item => item.sheetRow == row);
+    if (!p) return;
+
+    openPaymentModal(p.invoice);
+    document.getElementById('pay-sheet-row').value = p.sheetRow;
+    document.getElementById('pay-amount').value = String(p.amount).replace(/[^0-9.]/g, ''); 
+    document.getElementById('pay-date').value = p.date;
+    document.getElementById('pay-method').value = p.method;
+    document.getElementById('pay-note').value = p.note;
+  }).getPaymentsData();
+}
+
+function processSavePayment() {
+  const btn = event.target;
+  const sheetRow = document.getElementById('pay-sheet-row').value;
+  const invSelect = document.getElementById('pay-invoice');
+  const selectedOption = invSelect.options[invSelect.selectedIndex];
+
+  const payload = {
+    sheetRow: sheetRow,
+    invoice: invSelect.value,
+    invoiceId: selectedOption ? selectedOption.getAttribute('data-id') : '', // Capture the ID
+    amount: document.getElementById('pay-amount').value,
+    date: document.getElementById('pay-date').value,
+    method: document.getElementById('pay-method').value,
+    note: document.getElementById('pay-note').value
+  };
+
+  const serverFunc = sheetRow ? 'updatePayment' : 'addPayment';
+
+  btn.disabled = true;
+  google.script.run
+    .withSuccessHandler(function(updatedData) {
+      if(paymentModalInstance) paymentModalInstance.hide();
+      renderPayments(updatedData); // Refresh directly with returned data
+      btn.disabled = false;
+      btn.innerHTML = 'Save Payment';
+    })
+    .withFailureHandler(err => { alert(err); btn.disabled = false; })
+    [serverFunc](payload);
+}
+
+  function deletePaymentRecord(row) {
+    if (confirm("Delete this record?")) {
+      google.script.run
+        .withSuccessHandler(function(updatedData) {
+          // Use the global render function instead of the missing load function
+          if (typeof renderPayments === 'function') {
+            renderPayments(updatedData);
+          } else {
+            console.error("renderPayments function not found.");
+          }
+        })
+        .withFailureHandler(function(err) {
+          alert("Delete failed: " + err.message);
+        })
+        .deletePayment(row);
+    }
+  }
+</script>

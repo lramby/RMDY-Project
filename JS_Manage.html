@@ -1,0 +1,96 @@
+<script>
+let manageDataList = []; 
+
+function filterProjects() {
+  const query = document.getElementById('projectSearch').value.toLowerCase();
+  
+  // Filter the original list based on Client name, PID, or Claim number
+  const filteredData = manageDataList.filter(item => {
+    return (
+      item.client.toLowerCase().includes(query) ||
+      item.pid.toLowerCase().includes(query) ||
+      (item.claim && item.claim.toLowerCase().includes(query))
+    );
+  });
+
+  // Re-run the render function with the subset of data
+  renderFilteredTable(filteredData);
+}
+
+// A slightly modified render function for filtering 
+// so we don't overwrite the global manageDataList while searching
+function renderFilteredTable(data) {
+  const tbody = document.getElementById('table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  data.forEach(item => {
+    const row = document.createElement('tr');
+    if (item.isChecked) row.classList.add('selected-row');
+
+    row.onclick = () => handleRowSelection(row, item.rowIndex, item.pid);
+
+    row.innerHTML = `
+      <td class="p-3">
+        <div class="d-flex align-items-center mb-1">
+          <span class="fs-6 fw-semibold text-dark">${item.client}</span>
+          <span class="badge bg-light text-dark border ms-2 small">${item.type}</span>
+        </div>
+        <div class="d-flex flex-wrap small text-muted">
+          <span class="me-3"><strong>Claim:</strong> ${item.claim || 'N/A'}</span>
+          <span class="me-3"><strong>Policy:</strong> ${item.policy || 'N/A'}</span>
+          <span class="me-3"><strong>Status:</strong> ${item.status}</span>
+          <span class="pid-text"><strong>PID:</strong> ${item.pid}</span>
+        </div>
+      </td>`;
+    tbody.appendChild(row);
+  });
+}
+
+function renderTable(data) {
+  manageDataList = data; 
+  const tbody = document.getElementById('table-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  
+  data.forEach(item => {
+    const row = document.createElement('tr');
+    
+    // Apply the active style if it matches the saved memory
+    if (item.isChecked) row.classList.add('selected-row');
+
+    // Make the whole row clickable
+    row.onclick = () => handleRowSelection(row, item.rowIndex, item.pid);
+
+    row.innerHTML = `
+      <td class="p-3">
+        <div class="d-flex align-items-center mb-1">
+          <span class="fs-6 fw-semibold text-dark">${item.client}</span>
+          <span class="badge bg-light text-dark border ms-2 small">${item.type}</span>
+        </div>
+        <div class="d-flex flex-wrap small text-muted">
+          <span class="me-3"><strong>Claim:</strong> ${item.claim || 'N/A'}</span>
+          <span class="me-3"><strong>Policy:</strong> ${item.policy || 'N/A'}</span>
+          <span class="me-3"><strong>Status:</strong> ${item.status}</span>
+          <span class="pid-text"><strong>PID:</strong> ${item.pid}</span>
+        </div>
+      </td>`;
+    tbody.appendChild(row);
+  });
+}
+
+function handleRowSelection(rowElement, rowIndex, pid) {
+  // 1. Remove blue border from all rows, add to this one
+  document.querySelectorAll('#table-body tr').forEach(r => r.classList.remove('selected-row'));
+  rowElement.classList.add('selected-row');
+
+  // 2. Sync local memory for the "Edit Selected" button
+  manageDataList.forEach(item => {
+    item.isChecked = (item.pid === pid);
+  });
+
+  // 3. Save to UserProperties so it persists when you leave the page
+  google.script.run.webSelectProject(rowIndex);
+}
+
+</script>

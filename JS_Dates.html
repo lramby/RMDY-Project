@@ -1,0 +1,139 @@
+<script>
+  // Variable redeclaration fix: 
+  // We use currentProjectData (which is already declared in index/Details) 
+  // instead of currentDatesData to avoid SyntaxErrors.
+
+  /**
+   * Populates the main UI cards
+   */
+  function renderDates(data) {
+    const loader = document.getElementById('dates-loader'), 
+          content = document.getElementById('dates-content'), 
+          noSel = document.getElementById('dates-no-selection');
+          
+    if (loader) loader.style.display = 'none';
+    
+    if (!data) { 
+      if (noSel) noSel.style.display = 'block'; 
+      if (content) content.style.display = 'none';
+      return; 
+    }
+    
+    // Assigning to the global variable shared across pages
+    currentProjectData = data; 
+    
+    if (noSel) noSel.style.display = 'none';
+    
+    if (content) {
+      content.style.display = 'block';
+      
+      // Helper to strip time or handle empty values
+      const clean = (v) => (v && v !== "0:00:00") ? v.split(' ')[0] : '---';
+
+      const pidEl = document.getElementById('dates-pid');
+      if (pidEl) pidEl.innerText = data.pid || 'N/A';
+
+      document.getElementById('date-loss').innerText = clean(data.loss);
+      document.getElementById('date-due').innerText = clean(data.due);
+      document.getElementById('date-contacted').innerText = clean(data.contacted);
+      document.getElementById('date-assigned').innerText = clean(data.assigned);
+      document.getElementById('date-inspected').innerText = clean(data.inspected);
+      document.getElementById('date-estimated').innerText = clean(data.estimated);
+      document.getElementById('date-started').innerText = clean(data.started);
+      document.getElementById('date-finished').innerText = clean(data.finished);
+      document.getElementById('date-invoiced').innerText = clean(data.invoiced);
+      document.getElementById('date-approved').innerText = clean(data.approved);
+      document.getElementById('date-paid').innerText = clean(data.paid);
+    }
+  }
+
+  /**
+   * OPENS THE MODAL
+   */
+  function openDatesModal() {
+    if (!currentProjectData) return;
+    
+    const toInputDate = (str) => {
+      if(!str || str === '---' || str === "") return '';
+      let datePart = str.split(' ')[0];
+      let parts = datePart.split('/');
+      if(parts.length === 3) {
+        let m = parts[0].padStart(2, '0');
+        let d = parts[1].padStart(2, '0');
+        let y = parts[2];
+        return `${y}-${m}-${d}`;
+      }
+      return datePart;
+    };
+
+    try {
+      // Map global data to Modal Inputs
+      document.getElementById('edit-loss').value = toInputDate(currentProjectData.loss);
+      document.getElementById('edit-due').value = toInputDate(currentProjectData.due);
+      document.getElementById('edit-contacted').value = toInputDate(currentProjectData.contacted);
+      document.getElementById('edit-assigned').value = toInputDate(currentProjectData.assigned);
+      document.getElementById('edit-inspected').value = toInputDate(currentProjectData.inspected);
+      document.getElementById('edit-estimated').value = toInputDate(currentProjectData.estimated);
+      document.getElementById('edit-started').value = toInputDate(currentProjectData.started);
+      document.getElementById('edit-finished').value = toInputDate(currentProjectData.finished);
+      document.getElementById('edit-invoiced').value = toInputDate(currentProjectData.invoiced);
+      document.getElementById('edit-approved').value = toInputDate(currentProjectData.approved);
+      document.getElementById('edit-paid').value = toInputDate(currentProjectData.paid);
+
+      const modalElt = document.getElementById('datesModal');
+      let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
+      modal.show();
+      
+    } catch (err) {
+      console.error("Error populating modal:", err);
+    }
+  }
+
+  function submitDatesEdit() {
+    // If validateAndSubmit is global, this stays the same
+    if (typeof validateAndSubmit === 'function') {
+      validateAndSubmit('datesEditForm', function() {
+        executeDatesSave();
+      });
+    } else {
+      executeDatesSave();
+    }
+  }
+
+  function executeDatesSave() {
+    const btn = document.getElementById('datesSaveBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+    }
+
+    const formData = {
+      loss: document.getElementById('edit-loss').value,
+      due: document.getElementById('edit-due').value,
+      contacted: document.getElementById('edit-contacted').value,
+      assigned: document.getElementById('edit-assigned').value,
+      inspected: document.getElementById('edit-inspected').value,
+      estimated: document.getElementById('edit-estimated').value,
+      started: document.getElementById('edit-started').value,
+      finished: document.getElementById('edit-finished').value,
+      invoiced: document.getElementById('edit-invoiced').value,
+      approved: document.getElementById('edit-approved').value,
+      paid: document.getElementById('edit-paid').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(updatedData) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('datesModal'));
+        if (modal) modal.hide();
+        
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Save Timeline';
+        }
+        
+        // Use the function name that matches your PageConfig
+        renderDates(updatedData);
+      })
+      .updateDatesData(formData);
+  }
+</script>

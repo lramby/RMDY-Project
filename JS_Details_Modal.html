@@ -1,0 +1,88 @@
+<script>
+
+  function openDetailModal() {
+    if (!currentProjectData) {
+      alert("No project data found to edit.");
+      return;
+    }
+    
+    const editBtn = document.querySelector('[onclick="openDetailModal()"]');
+    const originalText = editBtn.innerHTML;
+    editBtn.disabled = true;
+    editBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    loadDropdownCache(() => {
+      try {
+        populateSelect('edit-state', 'States');
+        populateSelect('edit-country', 'Countries');
+
+        document.getElementById('edit-address').value = currentProjectData.address || '';
+        document.getElementById('edit-address2').value = currentProjectData.address2 || '';
+        document.getElementById('edit-city').value = currentProjectData.city || '';
+        document.getElementById('edit-zip').value = currentProjectData.zip || '';
+        document.getElementById('edit-firstName').value = currentProjectData.firstName || '';
+        document.getElementById('edit-lastName').value = currentProjectData.lastName || '';
+        document.getElementById('edit-email').value = currentProjectData.email || '';
+        document.getElementById('edit-state').value = currentProjectData.state || '';
+        document.getElementById('edit-country').value = currentProjectData.country || '';
+        document.getElementById('edit-phone').value = currentProjectData.phone || '';
+        
+        const modalElt = document.getElementById('editModal');
+        let modal = bootstrap.Modal.getInstance(modalElt);
+        if (!modal) modal = new bootstrap.Modal(modalElt);
+        modal.show();
+        
+      } catch (err) {
+        console.error("Error populating Modal:", err);
+      } finally {
+        if (editBtn) {
+          editBtn.disabled = false;
+          editBtn.innerHTML = originalText;
+        }
+      }
+    });
+  }
+
+  function submitEdit() {
+    validateAndSubmit('detailsEditForm', function() {
+      executeDetailsSave();
+    });
+  }
+
+  function executeDetailsSave() {
+    const saveBtn = document.getElementById('saveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    const formData = {
+      address: document.getElementById('edit-address').value,
+      address2: document.getElementById('edit-address2').value,
+      city: document.getElementById('edit-city').value,
+      state: document.getElementById('edit-state').value,
+      zip: document.getElementById('edit-zip').value,
+      country: document.getElementById('edit-country').value,
+      firstName: document.getElementById('edit-firstName').value,
+      lastName: document.getElementById('edit-lastName').value,
+      email: document.getElementById('edit-email').value,
+      phone: document.getElementById('edit-phone').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(updatedData) {
+        const modalElt = document.getElementById('editModal');
+        const modal = bootstrap.Modal.getInstance(modalElt);
+        if (modal) modal.hide();
+        
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Save Changes';
+        
+        renderDetails(updatedData);
+        
+        if (typeof renderTable === 'function') {
+          google.script.run.withSuccessHandler(renderTable).getManageData();
+        }
+      })
+      .updateProjectDetails(formData);
+  }
+
+</script>

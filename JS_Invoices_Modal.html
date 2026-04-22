@@ -1,0 +1,68 @@
+<script>
+  function openInvoiceModal() {
+    const form = document.getElementById('invoiceForm');
+    if (form) form.reset();
+    document.getElementById('inv-row-index').value = "";
+    document.getElementById('inv-id-hidden').value = "INV-" + Date.now();
+    
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('invoiceModal')).show();
+  }
+
+  function handleEditInvoice(row) {
+    const inv = currentInvoices.find(i => i.sheetRow == row);
+    if (!inv) return;
+
+    document.getElementById('inv-row-index').value = inv.sheetRow;
+    document.getElementById('inv-id-hidden').value = inv.invoiceId || "";
+    document.getElementById('inv-number').value = inv.number || "";
+    document.getElementById('inv-formattedDate').value = inv.formattedDate || "";
+    document.getElementById('inv-note').value = inv.note || "";
+
+    // Clean string to prevent NaN
+    const totalClean = String(inv.total).replace(/[$,]/g, '');
+    document.getElementById('inv-total').value = parseFloat(totalClean) || 0;
+    
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('invoiceModal')).show();
+  }
+
+  function submitInvoice() {
+    const btn = event.currentTarget;
+    const obj = {
+      row: document.getElementById('inv-row-index').value,
+      invoiceId: document.getElementById('inv-id-hidden').value,
+      number: document.getElementById('inv-number').value,
+      total: document.getElementById('inv-total').value,
+      formattedDate: document.getElementById('inv-formattedDate').value,
+      note: document.getElementById('inv-note').value,
+      // Pass as string to avoid the "Illegal Value" error
+      date: new Date().toLocaleDateString() 
+    };
+
+    if (!obj.number) { alert("Invoice number required."); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+    google.script.run
+      .withSuccessHandler(function(data) {
+        btn.disabled = false;
+        btn.innerHTML = 'Save Invoice';
+        bootstrap.Modal.getInstance(document.getElementById('invoiceModal')).hide();
+        renderInvoices(data);
+      })
+      .withFailureHandler(function(err) {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+      })
+      .saveInvoiceData(obj);
+  }
+
+  function handleDeleteInvoice(row, invId) {
+    if (confirm("Permanently delete this invoice?")) {
+      google.script.run
+        .withSuccessHandler(renderInvoices)
+        .withFailureHandler(err => alert(err.message))
+        .deleteInvoiceRow(row, invId);
+    }
+  }
+</script>

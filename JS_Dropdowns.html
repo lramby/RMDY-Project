@@ -1,0 +1,58 @@
+<script>
+  // 1. The Global Cache variable
+  let DROPDOWN_CACHE = null;
+
+  /**
+   * The "Gatekeeper" function. 
+   * It checks if we have the data. If not, it fetches it from the server.
+   * Then it runs the callback function (like opening your modal).
+   */
+  function loadDropdownCache(callback) {
+    // If we already have data, just run the callback immediately
+    if (DROPDOWN_CACHE) {
+      console.log("Using cached dropdown data.");
+      if (callback) callback(DROPDOWN_CACHE);
+      return;
+    }
+
+    // If we don't have data, fetch it from Code.gs
+    console.log("Fetching dropdown data from server...");
+    google.script.run
+      .withSuccessHandler(data => {
+        DROPDOWN_CACHE = data;
+        console.log("Dropdown cache populated:", DROPDOWN_CACHE);
+        if (callback) callback(DROPDOWN_CACHE);
+      })
+      .withFailureHandler(err => {
+        console.error("Failed to load dropdowns:", err);
+      })
+      .getDropdownData(); // This matches the function name in your .gs file
+  }
+
+  /**
+   * Helper to populate a <select> element using the cache
+   * added "selectedValue" parameter to handle edits
+   */
+  function populateSelect(elementId, type, selectedValue) {
+    const select = document.getElementById(elementId);
+    if (!select || !DROPDOWN_CACHE || !DROPDOWN_CACHE[type]) return;
+
+    // Clear existing
+    select.innerHTML = '';
+
+    // Add Placeholder
+    const placeholder = document.createElement('option');
+    placeholder.value = "";
+    placeholder.textContent = "-- Select " + type + " --";
+    select.appendChild(placeholder);
+
+    // Add Items
+    DROPDOWN_CACHE[type].forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      if (item === selectedValue) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+</script>

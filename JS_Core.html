@@ -1,0 +1,81 @@
+<script>
+
+  function loadPage(pageName) {
+    // 1. Sidebar Management (Mobile)
+    if (window.innerWidth < 768) {
+      document.getElementById('sidebar')?.classList.remove('active');
+      document.getElementById('sidebar-overlay')?.classList.remove('active');
+    }
+
+    // 2. Nav Link UI Update
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.classList.toggle('active', link.innerText.trim().includes(pageName));
+    });
+
+    // 3. Set Loading State
+    const mainArea = document.getElementById('main-content');
+    mainArea.innerHTML = `
+      <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Loading ${pageName}...</p>
+      </div>`;
+
+    // 4. Page Configuration Map (Restored)
+    const pageConfig = {
+      'Manage': { title: 'Manage Projects', btn: '', action: '', handler: 'renderTable', server: 'getManageData', icon: '', showBtn: false },
+      'Details': { title: 'Detail List', btn: 'Edit Detail', action: 'openDetailModal()', handler: 'renderDetails', server: 'getDetailsData', icon: 'bi bi-pencil', showBtn: true },
+      'Dates': { title: 'Dates List', btn: 'Edit Dates', action: 'openDatesModal()', handler: 'renderDates', server: 'getDatesData', icon: 'bi bi-pencil', showBtn: true },
+      'Assignments': { title: 'Assignments', btn: 'Edit Assignment', action: 'openAssignmentModal()', handler: 'renderAssignments', server: 'getAssignmentsData', icon: 'bi bi-pencil', showBtn: true },
+      'Service': { title: 'Service List', btn: 'Edit Service', action: 'openServiceModal()', handler: 'renderService', server: 'getServiceData', icon: 'bi bi-pencil', showBtn: true },
+      'Site': { title: 'Site List', btn: 'Edit Site', action: 'openSiteEditModal()', handler: 'renderSite', server: 'getSiteData', icon: 'bi bi-pencil', showBtn: true },
+      'Materials': { title: 'Material List', btn: 'Add Material', action: 'openMaterialModal()', handler: 'renderMaterials', server: 'getMaterialsData', icon: 'bi bi-plus-lg', showBtn: true },
+      'Equipment': { title: 'Equipment', btn: 'Add Equipment', action: 'openEquipmentModal()', handler: 'renderEquipment', server: 'getEquipmentData', icon: 'bi bi-plus-lg', showBtn: true },
+      'Tasks': { title: 'Project Tasks', btn: 'New Task', action: 'openTaskModal()', handler: 'showTasks', server: 'getTasksData', icon: 'bi bi-plus-lg', showBtn: true },
+      'Records': { title: 'Service Records', btn: 'New Entry', action: 'openRecordModal()', handler: 'renderRecords', server: 'getRecordsData', icon: 'bi bi-pencil', showBtn: true },
+      'Invoices': { title: 'Invoices', btn: 'Create Invoice', action: 'openInvoiceModal()', handler: 'renderInvoices', server: 'getInvoicesData', icon: 'bi bi-plus-lg', showBtn: true },
+      'Attachments': { title: 'Attachments', btn: 'Open Drive', action: 'openDrive()', handler: 'showAttachments', server: 'getAttachmentsData', icon: 'bi bi-plus-lg', showBtn: true },
+      'Insurance': { title: 'Insurance', btn: 'Add Insurance', action: 'openInsuranceModal()', handler: 'renderInsurance', server: 'getInsuranceData', icon: 'bi bi-pencil', showBtn: true },
+      'Payments': { title: 'Payments List', btn: 'Add Payment', action: 'openPaymentModal()', handler: 'renderPayments', server: 'getPaymentsData', icon: 'bi bi-plus-lg', showBtn: true }
+    };
+
+    // 5. Fetch HTML and Route Data
+    google.script.run
+      .withSuccessHandler(function(htmlSnippet) {
+        const cfg = pageConfig[pageName];
+
+        let headerHtml = '';
+        if (cfg) {
+          const buttonHtml = cfg.showBtn ? `
+            <button class="btn btn-primary btn-sm" onclick="${cfg.action}">
+              <i class="${cfg.icon} me-1"></i> ${cfg.btn}
+            </button>` : '';
+
+          headerHtml = `
+            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+              <h4 class="fw-bold mb-0">${cfg.title}</h4>
+              ${buttonHtml}
+            </div>`;
+        }
+
+        mainArea.innerHTML = headerHtml + htmlSnippet;
+        
+        if (cfg) {
+          if (window[cfg.handler]) {
+            google.script.run.withSuccessHandler(window[cfg.handler])[cfg.server]();
+          } else {
+            console.error("Handler function not found: " + cfg.handler);
+          }
+        }
+      })
+      .getPageHtml(pageName);
+  }
+  /**
+   * END OF LOADPAGE LOGIC
+   */
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('active');
+    document.getElementById('sidebar-overlay').classList.toggle('active');
+  }
+
+</script>

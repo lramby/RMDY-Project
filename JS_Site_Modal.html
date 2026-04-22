@@ -1,0 +1,105 @@
+<script>
+
+  function openSiteEditModal() {
+    if (!currentProjectData) {
+      alert("Please select a project first.");
+      return;
+    }
+
+    loadDropdownCache(() => {
+      populateSelect('edit-sqft', 'SqFtRange');
+      populateSelect('edit-frame', 'BuildingFrame');
+      populateSelect('edit-occupancy', 'OccupancyStatus');
+      populateSelect('edit-usage', 'PropertyUsage');
+      populateSelect('edit-property-type', 'PropertyType');
+      populateSelect('edit-basement', 'BasementType');
+
+      const data = currentProjectData;
+      document.getElementById('edit-sqft').value = data.sqFt || '';
+      document.getElementById('edit-frame').value = data.construction || '';
+      document.getElementById('edit-occupancy').value = data.occupancy || '';
+      document.getElementById('edit-yearBuilt').value = data.yearBuilt || '';
+      document.getElementById('edit-usage').value = data.usage || '';
+      document.getElementById('edit-property-type').value = data.residence || '';
+      document.getElementById('edit-basement').value = data.basement || '';
+
+      const modalElt = document.getElementById('siteEditModal');
+      let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
+      modal.show();
+    });
+  }
+
+  function submitSiteEdit() {
+    const saveBtn = document.getElementById('siteSaveBtn');
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    const formData = {
+      sqFt: document.getElementById('edit-sqft').value,
+      construction: document.getElementById('edit-frame').value,
+      occupancy: document.getElementById('edit-occupancy').value,
+      yearBuilt: document.getElementById('edit-yearBuilt').value,
+      usage: document.getElementById('edit-usage').value,
+      residence: document.getElementById('edit-property-type').value,
+      basement: document.getElementById('edit-basement').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(updatedData) {
+        const modalElt = document.getElementById('siteEditModal');
+        const modal = bootstrap.Modal.getInstance(modalElt);
+        if (modal) modal.hide();
+        
+        saveBtn.disabled = false;
+        saveBtn.innerText = 'Save Changes';
+        
+        renderSite(updatedData); 
+      })
+      .updateSiteData(formData);
+  }
+
+  function openRoomModal(index = null) {
+      const modalElt = document.getElementById('roomModal');
+      if (index !== null) {
+        const r = currentRooms[index];
+        document.getElementById('room-row-index').value = r.sheetRow;
+        document.getElementById('edit-room-name').value = r.name;
+        document.getElementById('edit-room-number').value = r.roomNum;
+        document.getElementById('edit-room-l').value = r.l;
+        document.getElementById('edit-room-w').value = r.w;
+        document.getElementById('edit-room-h').value = r.h;
+      } else {
+        document.getElementById('room-row-index').value = "";
+        document.getElementById('edit-room-name').value = "";
+        document.getElementById('edit-room-number').value = "";
+        document.getElementById('edit-room-l').value = "";
+        document.getElementById('edit-room-w').value = "";
+        document.getElementById('edit-room-h').value = "";
+      }
+      let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
+      modal.show();
+    }
+
+  function saveRoom() {
+    const roomData = {
+      row: document.getElementById('room-row-index').value,
+      name: document.getElementById('edit-room-name').value,
+      roomNum: document.getElementById('edit-room-number').value,
+      l: document.getElementById('edit-room-l').value,
+      w: document.getElementById('edit-room-w').value,
+      h: document.getElementById('edit-room-h').value
+    };
+
+    google.script.run.withSuccessHandler(() => {
+      bootstrap.Modal.getInstance(document.getElementById('roomModal')).hide();
+      loadRooms(); 
+    }).saveRoomData(roomData);
+  }
+
+  function handleDeleteRoom(sheetRow) {
+    if (confirm("Are you sure?")) {
+      google.script.run.withSuccessHandler(() => loadRooms()).deleteRoom(sheetRow);
+    }
+  }
+
+</script>

@@ -1,0 +1,138 @@
+<script>
+/**
+   * 4. Modal Setup
+   */
+  function openMaterialModal() {
+    loadDropdownCache(() => {
+      populateSelect('mat-item-name', 'MaterialsType');
+
+      google.script.run.withSuccessHandler(tasks => {
+        currentProjectTasks = tasks || []; // STORE GLOBALLY
+        const select = document.getElementById('mat-task-select');
+        if (!select) return;
+
+        if (currentProjectTasks.length === 0) {
+          alert("You must create at least one Task before adding materials.");
+          return;
+        }
+
+        select.innerHTML = currentProjectTasks.map(t => `<option value="${t.taskId}">${t.taskType} (${t.roomName})</option>`).join('');
+        
+        document.getElementById('mat-sheet-row').value = "";
+        document.getElementById('mat-qty').value = "";
+        document.getElementById('matModalTitle').innerText = "Add Material";
+        
+        const modalElt = document.getElementById('materialModal');
+        bootstrap.Modal.getOrCreateInstance(modalElt).show();
+      }).getTasksData();
+    });
+  }
+
+  /**
+   * 5. Save Logic
+   */
+  function processSaveMaterials() {
+    const btn = document.getElementById('matSaveBtn');
+    const typeSelect = document.getElementById('mat-item-name');
+    const taskSelect = document.getElementById('mat-task-select');
+    
+    // Check if tasks were loaded
+    if (!currentProjectTasks || currentProjectTasks.length === 0) {
+      alert("Task data missing. Please reopen the modal.");
+      return;
+    }
+
+    // Now currentProjectTasks is global, so .find() will work
+    const selectedTask = currentProjectTasks.find(t => String(t.taskId) === String(taskSelect.value));
+
+    if (!selectedTask) {
+      alert("Selected task not found.");
+      return;
+    }
+
+    const materObj = {
+      sheetRow: document.getElementById('mat-sheet-row').value,
+      item: typeSelect.value,
+      qty: document.getElementById('mat-qty').value,
+      taskId: taskSelect.value,
+      taskName: selectedTask.taskType,
+      roomName: selectedTask.roomName,
+      roomId: selectedTask.roomId
+    };
+
+    if (!materObj.item || !materObj.qty || !materObj.taskId) {
+      alert("Please complete all fields.");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    google.script.run
+      .withSuccessHandler(() => {
+        btn.disabled = false;
+        btn.innerText = 'Save';
+        loadMaterials();
+        bootstrap.Modal.getInstance(document.getElementById('materialModal')).hide();
+      })
+      .withFailureHandler(err => {
+        btn.disabled = false;
+        btn.innerText = 'Save';
+        alert("Error saving: " + err.message);
+      })
+      .saveMaterialsData(materObj);
+  }
+
+  /**
+   * 6. Delete Logic
+   */
+  function handleDeleteMaterial(row) {
+    if (confirm("Permanently delete this material?")) {
+      google.script.run
+        .withSuccessHandler(function(updatedData) {
+          // Use the global render function to update the table instantly
+          if (typeof renderMaterials === 'function') {
+            renderMaterials(updatedData);
+          } else {
+            loadMaterials(); // Fallback
+          }
+        })
+        .withFailureHandler(err => alert("Error deleting item: " + err.message))
+        .deleteMaterial(row);
+    }
+  }
+
+  /**
+   * 7. Edit Logic
+   */
+  function handleEditMaterial(row) {
+    const mat = currentMaterials.find(m => m.sheetRow == row);
+    if (!mat) return;
+
+    loadDropdownCache(() => {
+      populateSelect('mat-item-name', 'MaterialsType', mat.item);
+
+      google.script.run.withSuccessHandler(tasks => {
+        currentProjectTasks = tasks || []; // STORE GLOBALLY
+        const select = document.getElementById('mat-task-select');
+        if (!select) return;
+
+        select.innerHTML = currentProjectTasks.map(t => `<option value="${t.taskId}">${t.taskType} (${t.roomName})</option>`).join('');
+        
+        document.getElementById('mat-sheet-row').value = mat.sheetRow;
+        document.getElementById('mat-qty').value = mat.qty;
+        document.getElementById('mat-task-select').value = mat.taskId;
+        document.getElementById('matModalTitle').innerText = "Edit Material";
+
+        const modalElt = document.getElementById('materialModal');
+        bootstrap.Modal.getOrCreateInstance(modalElt).show();
+      }).getTasksData();
+    });
+  }
+
+
+  // Expose functions to global window scope for table buttons
+  window.handleDeleteMaterial = handleDeleteMaterial;
+  window.handleEditMaterial = handleEditMaterial;
+  window.openMaterialModal = openMaterialModal;
+</script>

@@ -1,0 +1,89 @@
+<script>
+
+  /**
+   * OPENS THE MODAL
+   * Now includes global dropdown population for Yes/No fields
+   */
+  function openServiceModal() {
+    if (!currentProjectData) return;
+
+    // 1. Use the global dropdown importer
+    loadDropdownCache(() => {
+      try {
+        // 2. Populate the dropdowns from global
+        populateSelect('edit-thermal', 'YesNo');
+        populateSelect('edit-fog', 'YesNo');
+        populateSelect('edit-setup', 'BusinessHours');
+        populateSelect('edit-takedown', 'BusinessHours');
+        populateSelect('edit-service-type', 'ServiceType');
+
+        // 3. Map current values to Modal Inputs
+        const d = currentProjectData;
+        document.getElementById('edit-service-type').value = d.serviceType || '';
+        document.getElementById('edit-setup').value = d.setup || '';
+        document.getElementById('edit-takedown').value = d.takedown || '';
+        document.getElementById('edit-monitor').value = d.monitor || '';
+        document.getElementById('edit-drivetime').value = d.drivetime || '';
+        
+        // Set dropdown values after they've been populated
+        document.getElementById('edit-thermal').value = d.thermal || 'No';
+        document.getElementById('edit-fog').value = d.fog || 'No';
+        
+        document.getElementById('edit-description').value = d.description || '';
+
+        // 4. Show the Modal
+        const modalElt = document.getElementById('serviceModal');
+        let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
+        modal.show();
+        
+      } catch (err) {
+        console.error("Error populating service modal dropdowns:", err);
+      }
+    });
+  }
+
+  function submitServiceEdit() {
+    if (typeof validateAndSubmit === 'function') {
+      validateAndSubmit('serviceEditForm', function() {
+        executeServiceSave();
+      });
+    } else {
+      executeServiceSave();
+    }
+  }
+
+  function executeServiceSave() {
+    const btn = document.getElementById('serviceSaveBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+    }
+
+    const formData = {
+      serviceType: document.getElementById('edit-service-type').value,
+      setup: document.getElementById('edit-setup').value,
+      takedown: document.getElementById('edit-takedown').value,
+      monitor: document.getElementById('edit-monitor').value,
+      drivetime: document.getElementById('edit-drivetime').value,
+      thermal: document.getElementById('edit-thermal').value,
+      fog: document.getElementById('edit-fog').value,
+      description: document.getElementById('edit-description').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(updatedData) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('serviceModal'));
+        if (modal) modal.hide();
+        
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Save Service Details';
+        }
+        
+        // Sync: use renderService, not showService
+        renderService(updatedData);
+      })
+      .updateServiceData(formData);
+  }
+
+  </script>

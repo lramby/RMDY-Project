@@ -1,0 +1,18 @@
+<script>
+  /**
+   * Helper to format Room Display for UI tables
+   * Used by Tasks, Materials, and Equipment pages
+   */
+  function formatRoomDisplay(name, number) {
+    if (!name) return "Unassigned";
+    return number ? `${name} (#${number})` : name;
+  }
+
+  /**
+   * Global Error Logger
+   */
+  function handleGlobalError(err) {
+    console.error("App Error:", err);
+    alert("An unexpected error occurred: " + err.message);
+  }
+</script>

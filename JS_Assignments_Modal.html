@@ -1,0 +1,89 @@
+<script>
+function openAssignmentModal() {
+    // 1. Load Company Dropdown (Custom Fetch)
+    google.script.run.withSuccessHandler(companies => {
+      const companySelect = document.getElementById('asgn-company');
+      companySelect.innerHTML = '<option value="">Select Company...</option>' + 
+        companies.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+
+      // 2. Load Roles using the GLOBAL dropdown type "AssignmentRole"
+      loadDropdownCache(() => {
+        populateSelect('asgn-role', 'AssignmentRole'); // Targeted AssignmentRole
+        
+        // Reset form for fresh entry
+        document.getElementById('asgn-sheet-row').value = "";
+        document.getElementById('asgn-form').reset();
+        document.getElementById('asgnModalTitle').innerText = "Add Team Member";
+        
+        const modalElt = document.getElementById('assignmentModal');
+        bootstrap.Modal.getOrCreateInstance(modalElt).show();
+      });
+    }).getAssignmentCompanyList();
+  }
+
+  function processSaveAssignment() {
+    const btn = document.getElementById('asgnSaveBtn');
+    
+    const assignObj = {
+      sheetRow: document.getElementById('asgn-sheet-row').value,
+      role: document.getElementById('asgn-role').value,
+      first: document.getElementById('asgn-first').value,
+      last: document.getElementById('asgn-last').value,
+      middle: document.getElementById('asgn-middle').value,
+      email: document.getElementById('asgn-email').value,
+      phone: document.getElementById('asgn-phone').value,
+      companyCode: document.getElementById('asgn-company').value
+    };
+
+    if (!assignObj.role || !assignObj.first || !assignObj.last) {
+      alert("Role and Name are required.");
+      return;
+    }
+
+    btn.disabled = true;
+    google.script.run
+      .withSuccessHandler(() => {
+        btn.disabled = false;
+        loadAssignments();
+        bootstrap.Modal.getInstance(document.getElementById('assignmentModal')).hide();
+      })
+      .saveAssignmentData(assignObj);
+  }
+
+  function handleEditAssignment(row) {
+    const a = currentAssignments.find(item => item.sheetRow == row);
+    if (!a) return;
+
+    google.script.run.withSuccessHandler(companies => {
+      const companySelect = document.getElementById('asgn-company');
+      companySelect.innerHTML = companies.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+      
+      loadDropdownCache(() => {
+        // Targeted AssignmentRole here too
+        populateSelect('asgn-role', 'AssignmentRole', a.role);
+        
+        document.getElementById('asgn-sheet-row').value = a.sheetRow;
+        document.getElementById('asgn-first').value = a.first;
+        document.getElementById('asgn-last').value = a.last;
+        document.getElementById('asgn-middle').value = a.middle;
+        document.getElementById('asgn-email').value = a.email;
+        document.getElementById('asgn-phone').value = a.phone;
+        document.getElementById('asgn-company').value = a.companyCode;
+        
+        document.getElementById('asgnModalTitle').innerText = "Edit Team Member";
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('assignmentModal')).show();
+      });
+    }).getAssignmentCompanyList();
+  }
+
+  function handleDeleteAssignment(row) {
+    if (confirm("Remove this team member?")) {
+      google.script.run
+        .withSuccessHandler(renderAssignments)
+        .deleteAssignment(row);
+    }
+  }
+  
+  window.handleEditAssignment = handleEditAssignment;
+  window.handleDeleteAssignment = handleDeleteAssignment;
+</script>

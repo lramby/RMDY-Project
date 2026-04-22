@@ -1,0 +1,24 @@
+<script>
+
+function showFinancials(data) {
+      const loader = document.getElementById('fin-loader'), content = document.getElementById('fin-content'), noSel = document.getElementById('fin-no-selection');
+      if (loader) loader.style.display = 'none';
+      if (!data) { if (noSel) noSel.style.display = 'block'; return; }
+      if (content) content.style.display = 'block';
+      const pidBadge = document.getElementById('financials-pid');
+      if (pidBadge) pidBadge.innerText = data.pid;
+      const totalDisplay = document.getElementById('display-total-cost');
+      if (totalDisplay) totalDisplay.innerText = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(data.totalCost || 0);
+      document.getElementById('display-materials').innerText = data.materials || "—";
+      document.getElementById('display-labor').innerText = data.labor || "—";
+      document.getElementById('display-subtrade').innerText = data.subtrade || "—";
+      document.getElementById('display-equipment').innerText = data.equipment || "—";
+      document.getElementById('display-expense').innerText = data.expense || "—";
+      document.getElementById('display-overhead').innerText = data.overhead || "—";
+      document.getElementById('display-invoiced').innerText = data.invoiced || "—";
+      document.getElementById('display-invdelta').innerText = data.invdelta || "—";
+      document.getElementById('display-estimated').innerText = data.estimated || "—";
+      document.getElementById('display-estdelta').innerText = data.estdelta || "—";
+}
+
+</script>

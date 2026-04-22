@@ -1,0 +1,45 @@
+<script>
+  /**
+   * Universal Form Validator
+   * @param {string} formId - The ID of the form being submitted
+   * @param {function} callback - The function to run if validation passes
+   */
+  function validateAndSubmit(formId, callback) {
+    // 1. Fetch rules from the server
+    google.script.run.withSuccessHandler(function(requiredIds) {
+      const form = document.getElementById(formId);
+      if (!form) {
+        console.error("Form not found:", formId);
+        return;
+      }
+
+      let isValid = true;
+      let firstErrorField = null;
+
+      // 2. Reset all fields in this specific form
+      const inputs = form.querySelectorAll('input, select, textarea');
+      inputs.forEach(input => input.classList.remove('is-invalid'));
+
+      // 3. Check required fields
+      requiredIds.forEach(id => {
+        const element = document.getElementById(id);
+        // Ensure element exists, is inside this form, and is empty
+        if (element && form.contains(element) && !element.value.trim()) {
+          isValid = false;
+          element.classList.add('is-invalid');
+          if (!firstErrorField) firstErrorField = element;
+        }
+      });
+
+      // 4. Handle invalid state
+      if (!isValid) {
+        if (firstErrorField) firstErrorField.focus();
+        return; 
+      }
+
+      // 5. Success! Run the save logic passed in the callback
+      callback();
+
+    }).getRequiredFields(formId); 
+  }
+</script>

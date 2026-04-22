@@ -1,0 +1,60 @@
+<script>
+  let currentAssignments = [];
+
+  function initAssignments() {
+    loadAssignments();
+  }
+
+  function loadAssignments() {
+    const loader = document.getElementById('assign-loader');
+    const content = document.getElementById('assign-content');
+    
+    if (loader) loader.style.display = 'block';
+    if (content) content.style.display = 'none';
+    
+    google.script.run
+      .withSuccessHandler(renderAssignments)
+      .getAssignmentsData();
+  } 
+
+  function renderAssignments(data) {
+    const loader = document.getElementById('assign-loader');
+    const content = document.getElementById('assign-content');
+    const tbody = document.getElementById('assign-table-body');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
+    
+    currentAssignments = data || [];
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (currentAssignments.length === 0) {
+      tbody.innerHTML = `<tr><td class="text-center text-muted py-4">No team members assigned.</td></tr>`;
+      return;
+    }
+    
+    currentAssignments.forEach((a) => {
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>
+            <div class="fw-bold text-primary">${a.first} ${a.last}</div>
+            <div class="small"><strong>Role:</strong> ${a.role}</div>
+            <div class="small"><strong>Company:</strong> ${a.companyCode}</div>
+            <div class="small text-muted">${a.email} | ${a.phone}</div>
+          </td>
+          <td class="text-end align-middle">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditAssignment(${a.sheetRow})">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteAssignment(${a.sheetRow})">
+              <i class="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>`);
+    });
+  }
+
+  // Exposure for Global Header Buttons
+  window.openAssignmentModal = openAssignmentModal;
+</script>

@@ -1,0 +1,37 @@
+<script>
+  
+  function renderDetails(data) {
+    const loader = document.getElementById('loader'), 
+          content = document.getElementById('content'), 
+          noSel = document.getElementById('no-selection');
+    
+    if (loader) loader.style.display = 'none';
+    
+    if (!data) { 
+      if (noSel) noSel.style.display = 'block'; 
+      if (content) content.style.display = 'none';
+      return; 
+    }
+    
+    currentProjectData = data; 
+
+    if (content) {
+      if (noSel) noSel.style.display = 'none';
+      content.style.display = 'block';
+      
+      // SAFETY CHECKED UI UPDATES
+      const setEl = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = val || '';
+      };
+
+      setEl('display-pid', data.pid);
+      setEl('display-address', `${data.address || ''} ${data.address2 || ''}`.trim());
+      setEl('display-location', `${data.city || ''}, ${data.state || ''} ${data.zip || ''}`.trim());
+      setEl('display-email', data.email);
+      setEl('display-customer', `${data.firstName || ''} ${data.lastName || ''}`.trim());
+      setEl('display-phone', data.phone);
+    }
+  }
+
+</script>

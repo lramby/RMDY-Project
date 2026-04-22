@@ -1,0 +1,46 @@
+<script>
+  /**
+   * Populates the Service List UI
+   */
+  function renderService(data) {
+    const loader = document.getElementById('service-loader'), 
+          content = document.getElementById('service-content'), 
+          noSel = document.getElementById('service-no-selection');
+          
+    if (loader) loader.style.display = 'none';
+    
+    if (!data) { 
+      if (noSel) reserve.style.display = 'block'; 
+      if (content) content.style.display = 'none';
+      return; 
+    }
+    
+    // Use the global variable shared across pages
+    currentProjectData = data;
+
+    if (noSel) noSel.style.display = 'none';
+    
+    if (content) {
+      content.style.display = 'block';
+      const val = (v) => v || '---';
+
+      // Safety helper
+      const safeSet = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.innerText = text;
+      };
+
+      safeSet('service-pid', val(data.pid));
+      safeSet('display-service-type', val(data.serviceType));
+      safeSet('display-setup', val(data.setup));
+      safeSet('display-takedown', val(data.takedown));
+      safeSet('display-monitor', val(data.monitor));
+      safeSet('display-drivetime', val(data.drivetime));
+      safeSet('display-thermal', val(data.thermal));
+      safeSet('display-fog', val(data.fog));
+      safeSet('display-description', val(data.description));
+    }
+  }
+
+  
+</script>

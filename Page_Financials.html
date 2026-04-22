@@ -1,0 +1,102 @@
+<div class="container-fluid p-3">
+  
+  <div id="fin-loader" class="text-center mt-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-2">Loading project financials...</p>
+  </div>
+
+  <div id="no-selection" class="alert alert-warning shadow-sm" style="display:none;">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    No active project selected. Please go to <strong>Manage</strong> first.
+  </div>
+
+  <div id="fin-content" style="display: none;">
+    <!--
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
+      <h2 class="mb-0 me-2 dynamic-text">Financials</h2>
+      <span class="badge text-bg-secondary px-3 py-2 mt-2 mt-sm-0" id="financials-pid"></span>
+    </div>
+    -->
+
+    <div class="card bg-primary text-white mb-4 border-0">
+      <div class="card-body text-center">
+        <div class="small opacity-75 text-uppercase">Total Project Cost</div>
+        <div class="display-6 fw-bold" id="display-total-cost">$0.00</div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Materials</span>
+            <span id="display-materials" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Labor</span>
+            <span id="display-labor" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Subtrades</span>
+            <span id="display-subtrade" class="fw-bold"></span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Equipment</span>
+            <span id="display-equipment" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Expenses</span>
+            <span id="display-expense" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Overhead</span>
+            <span id="display-overhead" class="fw-bold"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 mt-4 border-bottom pb-3">
+      <h3 class="mb-0 me-2 dynamic-text">Performance</h3>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Invoiced</span>
+            <span id="display-invoiced" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Invoice Delta</span>
+            <span id="display-invdelta" class="fw-bold"></span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-md-6">
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Estimated</span>
+            <span id="display-estimated" class="fw-bold"></span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Estimate Delta</span>
+            <span id="display-estdelta" class="fw-bold"></span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="fin-no-selection" class="alert alert-warning" style="display:none;">
+    Please select a project on the Manage page to view financials.
+  </div>
+</div>

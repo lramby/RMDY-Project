@@ -1,0 +1,63 @@
+<script>
+
+  function showAttachments(data) {
+    // 1. Capture the data immediately before doing anything else
+    currentProjectData = data;
+
+    // 2. Use the timeout only for the UI/DOM updates
+    setTimeout(() => {
+      const loader = document.getElementById('attach-loader');
+      const content = document.getElementById('attach-content');
+      const tableBody = document.getElementById('attachment-file-table-body');
+      const pidBadge = document.getElementById('attach-pid-badge');
+      
+      if (loader) loader.style.display = 'none';
+      if (content) content.style.display = 'block';
+      
+      if (!data) {
+        if (tableBody) tableBody.innerHTML = '<tr><td colspan="3" class="text-center p-4">No project selected.</td></tr>';
+        return;
+      }
+
+      if (pidBadge) pidBadge.innerText = data.pid || "Unknown";
+
+      // Build the File Table
+      if (tableBody) {
+        tableBody.innerHTML = ''; 
+        
+        if (data.files && data.files.length > 0) {
+          data.files.forEach(file => {
+            const badgeClass = file.type === 'Images' ? 'bg-info text-dark' : 'bg-secondary';
+            const row = `
+              <tr>
+                <td class="text-truncate" style="max-width: 180px;">
+                  <i class="bi bi-file-earmark-text me-1 text-muted"></i>${file.name}
+                </td>
+                <td>
+                  <span class="badge ${badgeClass}" style="font-size: 0.7rem;">${file.type}</span>
+                </td>
+                <td class="text-end">
+                  <button onclick="window.open('${file.url}', '_blank')" class="btn btn-sm btn-outline-primary border-0">
+                    <i class="bi bi-box-arrow-up-right"></i>
+                  </button>
+                </td>
+              </tr>`;
+            tableBody.innerHTML += row;
+          });
+        } else {
+          tableBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">No files found.</td></tr>';
+        }
+      }
+    }, 10);
+  }
+
+  function openDrive() {
+    // This looks at the global currentProjectData set in showAttachments
+    if (currentProjectData && currentProjectData.folderLink) {
+      window.open(currentProjectData.folderLink, '_blank');
+    } else {
+      console.warn("Folder link missing.");
+      alert("No folder link found for this project.");
+    }
+  }
+</script>

@@ -1,0 +1,72 @@
+<script>
+  let paymentModalInstance;
+
+  function renderPayments(data) {
+    const loader = document.getElementById('payments-loader');
+    const content = document.getElementById('payments-content');
+    const tbody = document.getElementById('payment-table-body');
+    
+    if (loader) loader.style.display = 'none';
+    if (content) content.style.display = 'block';
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+    
+    // FIX: Handle the direct array or the object style for safety
+    const payments = Array.isArray(data) ? data : (data.payments || []);
+
+    if (payments.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">No records found.</td></tr>';
+    } else {
+      payments.forEach(p => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <tr class="g-0">
+            <td>
+            <div class="d-flex align-items-start w-100 p-2">
+              
+              <div class="flex-grow-1">
+              <div class="row g-2">
+                <div class="col-12 col-md-4">
+                  <div>Invoice: <strong>${p.invoice || '-'}</strong></div>
+                  <div>Amount: <strong>${p.amount}</strong></div>
+                  <div>Date: <strong>${p.date}</strong></div>
+                </div>
+                <div class="col-12 col-md-4">
+                  <div>Method: <strong>${p.method}</strong></div>
+                  <div>Payment ID:  <strong>${p.paymentId || ''}</strong></div>
+                  <div>Note:  <strong class="text-wrap">${p.note || ''}</strong></div>
+                </div>
+              </div>
+              </div>
+
+              <div class="ms-3 d-flex flex-column gap-1" style="min-width: 40px;">
+              <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditPayment(${p.sheetRow})">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deletePaymentRecord(${p.sheetRow})">
+                <i class="bi bi-trash"></i>
+              </button>
+              </div>
+
+            </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  // Explicitly expose to window so the Universal Router can find it
+  window.renderPayments = renderPayments;
+
+  function loadPayments() {
+    const loader = document.getElementById('payments-loader');
+    if (loader) loader.style.display = 'block';
+
+    google.script.run
+      .withSuccessHandler(renderPayments)
+      .getPaymentsData();
+  }
+
+</script>

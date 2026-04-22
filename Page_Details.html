@@ -1,0 +1,45 @@
+<div class="container-fluid p-2">
+
+  <div id="loader" class="text-center mt-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="text-muted mt-2">Loading project details...</p>
+  </div>
+
+  <div id="no-selection" class="alert alert-warning shadow-sm" style="display:none;">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    No active project selected. Please go to <strong>Manage</strong> first.
+  </div>
+
+  <div id="content" style="display:none;">
+        
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Property Address</div>
+        <div id="display-address" class="fs-5 fw-semibold dynamic-text"></div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Location</div>
+        <div id="display-location" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Customer Name</div>
+        <div id="display-customer" class="fs-5 dynamic-text"></div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Customer Email</div>
+        <div id="display-email" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="text-uppercase small fw-bold text-muted mb-1">Customer Phone</div>
+        <div id="display-phone" class="fs-5 dynamic-text"></div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,53 @@
+<div class="modal fade" id="recordModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recModalTitle">Record Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="recordForm">
+          <input type="hidden" id="rec-sheet-row">
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold small">Record Type</label>
+              <select id="rec-type" class="form-select"></select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold small">Reading Type</label>
+              <select id="rec-reading" class="form-select"></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold small">Day</label>
+              <input type="number" id="rec-day" class="form-control">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label fw-bold small">Value</label>
+              <input type="text" id="rec-value" class="form-control">
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Assign to Task</label>
+            <select id="rec-task-select" class="form-select">
+              <option value="">Loading tasks...</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">Note</label>
+            <textarea id="rec-note" class="form-control" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" id="recSaveBtn" class="btn btn-primary" onclick="processSaveRecord()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <?!= include('Style_Main'); ?>
+  </head>
+  <body>
+    <?!= include('Part_Mobile_Header'); ?>
+    <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div class="d-flex">
+      <?!= include('Part_Sidebar'); ?>
+      <div class="content-area" id="main-content"></div>
+    </div>
+
+    <script>
+      let currentProjectData = null; // Declare this at the very top of your script section
+      document.addEventListener('DOMContentLoaded', () => {
+        loadPage('Manage');
+      });
+    </script>
+
+    <?!= include('JS_Forms'); ?>
+    <?!= include('JS_Dropdowns'); ?>
+    <?!= include('JS_Manage'); ?>           <?!= include('JS_Manage_Modal'); ?>             <?!= include('Part_Manage_Modal'); ?>
+    <?!= include('JS_Details'); ?>          <?!= include('JS_Details_Modal'); ?>            <?!= include('Part_Details_Modal'); ?>
+    <?!= include('JS_Site'); ?>             <?!= include('JS_Site_Modal'); ?>               <?!= include('Part_Site_Modal'); ?>
+    <?!= include('JS_Dates'); ?>
+    <?!= include('JS_Service'); ?>          <?!= include('JS_Service_Modal'); ?>            <?!= include('Part_Service_Modal'); ?>
+    <?!= include('JS_Assignments'); ?>      <?!= include('JS_Assignments_Modal'); ?>        <?!= include('Part_Assignments_Modal'); ?>
+    <?!= include('JS_Tasks'); ?>            <?!= include('JS_Tasks_Modal'); ?>              <?!= include('Part_Tasks_Modal'); ?>
+    <?!= include('JS_Insurance'); ?>        <?!= include('JS_Insurance_Modal'); ?>          <?!= include('Part_Insurance_Modal'); ?>
+    <?!= include('JS_Attachments'); ?>
+    <?!= include('JS_Invoices'); ?>         <?!= include('JS_Invoices_Modal'); ?>           <?!= include('Part_Invoices_Modal'); ?>
+    <?!= include('JS_Records'); ?>          <?!= include('JS_Records_Modal'); ?>            <?!= include('Part_Records_Modal'); ?>
+    <?!= include('JS_Financials'); ?>
+    <?!= include('JS_Payments'); ?>         <?!= include('JS_Payments_Modal'); ?>           <?!= include('Part_Payments_Modal'); ?>
+    <?!= include('JS_Materials'); ?>        <?!= include('JS_Materials_Modal'); ?>          <?!= include('Part_Materials_Modal'); ?>
+    <?!= include('JS_Equipment'); ?>        <?!= include('JS_Equipment_Modal'); ?>          <?!= include('Part_Equipment_Modal'); ?>
+    <?!= include('JS_Core'); ?>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>
