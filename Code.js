@@ -113,11 +113,27 @@ function getDetailsData() {
   });
 }
 
-
-
-
-
-
-
-
-
+function getDatesData() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.DATES.NAME);
+  const values = sheet.getDataRange().getValues();
+  const cols = CONFIG.TABLES.DATES.COLUMNS;
+  
+  // Skip header and map to objects
+  return values.slice(1).map((row, index) => {
+    return {
+      rowIndex: index + 2, // 1 for header, 1 for 0-indexing
+      pid: row[cols.PID],
+      loss: row[cols.LOSS],
+      duedate: row[cols.DUEDATE],
+      contacted: row[cols.CONTACTED],
+      assigned: row[cols.ASSIGNED],
+      inspected: row[cols.INSPECTED],
+      estimated: row[cols.ESTIMATED],
+      started: row[cols.STARTED],
+      finished: row[cols.FINISHED],
+      invoiced: row[cols.INVOICED],
+      approved: row[cols.APPROVED],
+			paid: row[cols.PAID]
+    };
+  });
+}

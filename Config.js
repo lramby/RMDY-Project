@@ -33,22 +33,39 @@ const CONFIG = {
         NOTE: 11
       }
     },
-	DETAILS: {
-      NAME: "Details",
-      COLUMNS: {
-        PID: 0,
-        ADDRESS1: 1,
-        ADDRESS2: 2,
-        CITY: 3,
-        STATE: 4,
-        ZIP: 5,
-        COUNTRY: 6,
-        FIRSTNAME: 7,
-        LASTNAME: 8,
-        EMAIL: 9,
-        PHONE: 10
-      }
-    }
+		DETAILS: {
+			NAME: "Details",
+			COLUMNS: {
+				PID: 0,
+				ADDRESS1: 1,
+				ADDRESS2: 2,
+				CITY: 3,
+				STATE: 4,
+				ZIP: 5,
+				COUNTRY: 6,
+				FIRSTNAME: 7,
+				LASTNAME: 8,
+				EMAIL: 9,
+				PHONE: 10
+			}
+    },
+		DATES: {
+			NAME: "Dates",
+			COLUMNS: {
+				PID: 0,
+				LOSS: 1,
+				DUEDATE: 2,
+				CONTACTED: 3,
+				ASSIGNED: 4,
+				INSPECTED: 5,
+				ESTIMATED: 6,
+				STARTED: 7,
+				FINISHED: 8,
+				INVOICED: 9,
+				APPROVED: 10,
+				PAID: 11
+			}
+		}
   },
   PAGES: {
     EQUIPMENT: {

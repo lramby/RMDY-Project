@@ -1,54 +1,78 @@
 /**
  * Service_Dates.gs
  */
-/**
- * Service_Dates.gs
- */
-function getDatesData() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Dates");
-  const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
-  
-  if (!rowIndex) return null;
-  const targetRow = parseInt(rowIndex);
 
-  // Fetching Columns A through L (12 columns)
-  const displayValues = sheet.getRange(targetRow, 1, 1, 12).getDisplayValues()[0];
-  
-  return {
-    pid:       displayValues[0],  // Col A
-    loss:      displayValues[1],  // Col B
-    due:       displayValues[2],  // Col C
-    contacted: displayValues[3],  // Col D
-    assigned:  displayValues[4],  // Col E
-    inspected: displayValues[5],  // Col F
-    estimated: displayValues[6],  // Col G
-    started:   displayValues[7],  // Col H
-    finished:  displayValues[8],  // Col I
-    invoiced:  displayValues[9],  // Col J
-    approved:  displayValues[10], // Col K
-    paid:      displayValues[11]  // Col L
-  };
+function getDatesData() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(CONFIG.TABLES.DATES.NAME); // Use CONFIG for sheet name
+    const userProperties = PropertiesService.getUserProperties();
+    const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
+    
+    if (!rowIndex) return null;
+    const targetRow = parseInt(rowIndex);
+    const COLS = CONFIG.TABLES.DATES.COLUMNS;
+
+    // Fetch the specific project row
+    // We fetch 12 columns as defined in your current setup
+    const displayValues = sheet.getRange(targetRow, 1, 1, 12).getDisplayValues()[0];
+    
+    return {
+      pid:       displayValues[COLS.PID],
+      loss:      displayValues[COLS.LOSS],
+      due:       displayValues[COLS.DUE],
+      contacted: displayValues[COLS.CONTACTED],
+      assigned:  displayValues[COLS.ASSIGNED],
+      inspected: displayValues[COLS.INSPECTED],
+      estimated: displayValues[COLS.ESTIMATED],
+      started:   displayValues[COLS.STARTED],
+      finished:  displayValues[COLS.FINISHED],
+      invoiced:  displayValues[COLS.INVOICED],
+      approved:  displayValues[COLS.APPROVED],
+      paid:      displayValues[COLS.PAID]
+    };
+  } catch (e) {
+    console.error("Error in getDatesData: " + e.toString());
+    return null;
+  }
 }
 
 function updateDatesData(formObject) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Dates");
-  const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(CONFIG.TABLES.DATES.NAME);
+    const userProperties = PropertiesService.getUserProperties();
+    const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
 
-  if (!rowIndex) throw new Error("No active project selected.");
-  const targetRow = parseInt(rowIndex);
-  
-  // Updating Col B through L (Columns 2 to 12)
-  const values = [[
-    formObject.loss, formObject.due, formObject.contacted, 
-    formObject.assigned, formObject.inspected, formObject.estimated, 
-    formObject.started, formObject.finished, formObject.invoiced, 
-    formObject.approved, formObject.paid
-  ]];
-  
-  sheet.getRange(targetRow, 2, 1, 11).setValues(values);
-  return getDatesData();
+    if (!rowIndex) throw new Error("No active project selected.");
+    const targetRow = parseInt(rowIndex);
+    const COLS = CONFIG.TABLES.DATES.COLUMNS;
+    
+    // 1. Create a full row array to ensure data lands in the right spots
+    // Based on your original code, you are updating 11 columns (B-L)
+    const rowArray = new Array(12).fill(""); 
+
+    // 2. Map formObject values to the specific CONFIG indices
+    rowArray[COLS.LOSS]      = formObject.loss;
+    rowArray[COLS.DUE]       = formObject.due;
+    rowArray[COLS.CONTACTED] = formObject.contacted;
+    rowArray[COLS.ASSIGNED]  = formObject.assigned;
+    rowArray[COLS.INSPECTED] = formObject.inspected;
+    rowArray[COLS.ESTIMATED] = formObject.estimated;
+    rowArray[COLS.STARTED]   = formObject.started;
+    rowArray[COLS.FINISHED]  = formObject.finished;
+    rowArray[COLS.INVOICED]  = formObject.invoiced;
+    rowArray[COLS.APPROVED]  = formObject.approved;
+    rowArray[COLS.PAID]      = formObject.paid;
+
+    // 3. Write back to the sheet (Columns 2 through 12, which is index 1 to 11)
+    // We skip PID (Col A) to prevent accidental overwriting of the unique ID
+    const updateValues = [rowArray.slice(1)]; 
+    sheet.getRange(targetRow, 2, 1, 11).setValues(updateValues);
+
+    return getDatesData();
+  } catch (e) {
+    console.error("Error in updateDatesData: " + e.toString());
+    throw e;
+  }
 }
