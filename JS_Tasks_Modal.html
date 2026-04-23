@@ -94,7 +94,7 @@
       select.innerHTML = '<option value="">-- No Room Assigned --</option>';
       options.forEach(opt => {
         const el = document.createElement('option');
-        el.value = opt.id;
+        el.value = opt.pid;
         el.textContent = opt.display;
         if (opt.id === selectedRoomId) el.selected = true;
         select.appendChild(el);
