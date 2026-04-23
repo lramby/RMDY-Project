@@ -56,7 +56,7 @@ function getTasksData() {
   }
 }
 
-function saveTaskData(taskObj) {
+function saveTask(taskObj) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(CONFIG.TABLES.TASKS.NAME);
   const COLS = CONFIG.TABLES.TASKS.COLUMNS;
