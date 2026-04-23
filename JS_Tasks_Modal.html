@@ -42,32 +42,36 @@
 
 
   function submitTaskEdit() {
-    const btn = document.getElementById('taskSaveBtn');
-    const taskObj = {
-      sheetRow: document.getElementById('task-row-index').value,
-      taskId: document.getElementById('task-unique-id').value,
-      roomId: document.getElementById('edit-task-room').value,
-      taskName: document.getElementById('edit-task-type').value,
-      value: document.getElementById('edit-task-value').value
-			price: document.getElementById('equip-price')?.value || 0,
-			cost: document.getElementById('equip-cost')?.value || 0,
+		const btn = document.getElementById('taskSaveBtn');
+		
+		// FIXED: Added missing comma after the 'value' property
+		const taskObj = {
+			sheetRow: document.getElementById('task-row-index').value,
+			taskId: document.getElementById('task-unique-id').value,
+			roomId: document.getElementById('edit-task-room').value,
+			taskName: document.getElementById('edit-task-type').value,
+			value: document.getElementById('edit-task-value').value, // This comma was likely missing
+			unit: "", // Added to match your backend rowArray expectations
+			price: document.getElementById('edit-task-price').value,
+			cost: document.getElementById('edit-task-cost').value,
 			note: document.getElementById('edit-task-note').value
-    };
+		};
 
-    if (!taskObj.taskName) {
-      alert("Please select a task type.");
-      return;
-    }
+		if (!taskObj.taskName) {
+			alert("Please select a task type.");
+			return;
+		}
 
-    btn.disabled = true;
-    google.script.run
-      .withSuccessHandler(function(updatedTasks) {
-        bootstrap.Modal.getInstance(document.getElementById('taskModal')).hide();
-        btn.disabled = false;
-        showTasks(updatedTasks);
-      })
-      .saveTask(taskObj);
-  }
+		btn.disabled = true;
+		google.script.run
+			.withSuccessHandler(function(updatedTasks) {
+				const modalElt = document.getElementById('taskModal');
+				bootstrap.Modal.getInstance(modalElt).hide();
+				btn.disabled = false;
+				showTasks(updatedTasks);
+			})
+			.saveTask(taskObj);
+	}
 
   function handleDeleteTask(row) {
     if (confirm("Permanently delete this task?")) {
