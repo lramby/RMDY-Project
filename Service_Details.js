@@ -22,7 +22,7 @@ function getDetailsData() {
 
     return {
       pid:       rowData[COLS.PID] ? String(rowData[COLS.PID]) : "",
-      address:   rowData[COLS.ADDRESS] || "",
+      address1:   rowData[COLS.ADDRESS1] || "",
       address2:  rowData[COLS.ADDRESS2] || "",
       city:      rowData[COLS.CITY] || "",
       zip:       rowData[COLS.ZIP] || "",
@@ -61,7 +61,7 @@ function updateProjectDetails(formObject) {
   
   const updateData = [];
   // We update from Column B (Index 1) onwards to avoid overwriting PID
-  updateData[COLS.ADDRESS - 1]   = formObject.address || "";
+  updateData[COLS.ADDRESS1 - 1]   = formObject.address1 || "";
   updateData[COLS.ADDRESS2 - 1]  = formObject.address2 || "";
   updateData[COLS.CITY - 1]      = formObject.city || "";
   updateData[COLS.ZIP - 1]       = formObject.zip || "";

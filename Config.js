@@ -34,7 +34,7 @@ const CONFIG = {
       }
     },
 	DETAILS: {
-      NAME: "Equipment",
+      NAME: "Details",
       COLUMNS: {
         PID: 0,
         ADDRESS1: 1,
