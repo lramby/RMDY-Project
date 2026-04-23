@@ -1,169 +1,169 @@
 <script>
-/**
- * LINE 1: Global variable to store tasks for the dropdown
- */
-window.equipProjectTasks = [];
+	/**
+	 * LINE 1: Global variable to store tasks for the dropdown
+	 */
+	window.equipProjectTasks = [];
 
-/**
- * FUNCTION: openEquipmentModal
- * Purpose: Triggered by the "Add Equipment" button in the header.
- */
-window.openEquipmentModal = function() {
-  console.log("Attempting to open Equipment Modal...");
+	/**
+	 * FUNCTION: openEquipmentModal
+	 * Purpose: Triggered by the "Add Equipment" button in the header.
+	 */
+	window.openEquipmentModal = function() {
+		console.log("Attempting to open Equipment Modal...");
 
-  // Ensure the cache is loaded before populating
-  loadDropdownCache(() => {
-    // 1. Populate standard dropdowns
-    populateSelect('equip-item-name', 'EquipmentType');
-    populateSelect('equip-unit-select', 'EquipmentUnits');
+		// Ensure the cache is loaded before populating
+		loadDropdownCache(() => {
+			// 1. Populate standard dropdowns
+			populateSelect('equip-item-name', 'EquipmentType');
+			populateSelect('equip-unit-select', 'EquipmentUnits');
 
-    // 2. Fetch Tasks for the project-specific dropdown
-    google.script.run.withSuccessHandler(tasks => {
-      window.equipProjectTasks = tasks || [];
-      const select = document.getElementById('equip-task-select');
-      
-      if (select) {
-        select.innerHTML = window.equipProjectTasks.map(t => 
-          `<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
-        ).join('');
-      }
+			// 2. Fetch Tasks for the project-specific dropdown
+			google.script.run.withSuccessHandler(tasks => {
+				window.equipProjectTasks = tasks || [];
+				const select = document.getElementById('equip-task-select');
+				
+				if (select) {
+					select.innerHTML = window.equipProjectTasks.map(t => 
+						`<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
+					).join('');
+				}
 
-      // 3. Reset all input fields safely
-      const fields = ['equip-sheet-row', 'equip-qty', 'equip-unit-select', 'equip-price', 'equip-cost', 'equip-note'];
-      fields.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
+				// 3. Reset all input fields safely
+				const fields = ['equip-sheet-row', 'equip-qty', 'equip-unit-select', 'equip-price', 'equip-cost', 'equip-note'];
+				fields.forEach(id => {
+					const el = document.getElementById(id);
+					if (el) el.value = "";
+				});
 
-      // 4. Update Modal Title and Show
-      const titleEl = document.getElementById('equipModalTitle');
-      if (titleEl) titleEl.innerText = "Add Equipment";
-      
-      const modalEl = document.getElementById('equipmentModal');
-      if (modalEl) {
-        const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modalInstance.show();
-      } else {
-        console.error("Critical Error: HTML element with ID 'equipmentModal' not found.");
-      }
-    }).getTasksData();
-  });
-};
+				// 4. Update Modal Title and Show
+				const titleEl = document.getElementById('equipModalTitle');
+				if (titleEl) titleEl.innerText = "Add Equipment";
+				
+				const modalEl = document.getElementById('equipmentModal');
+				if (modalEl) {
+					const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+					modalInstance.show();
+				} else {
+					console.error("Critical Error: HTML element with ID 'equipmentModal' not found.");
+				}
+			}).getTasksData();
+		});
+	};
 
-/**
- * FUNCTION: processSaveEquipment
- * Purpose: Triggered by the "Save" button INSIDE the modal.
- */
-window.processSaveEquipment = function() {
-  const btn = document.getElementById('equipSaveBtn');
-  const taskSelect = document.getElementById('equip-task-select');
-  
-  if (!taskSelect) return;
+	/**
+	 * FUNCTION: processSaveEquipment
+	 * Purpose: Triggered by the "Save" button INSIDE the modal.
+	 */
+	window.processSaveEquipment = function() {
+		const btn = document.getElementById('equipSaveBtn');
+		const taskSelect = document.getElementById('equip-task-select');
+		
+		if (!taskSelect) return;
 
-  // Find the selected task details to pass to the sheet
-  const selectedTask = window.equipProjectTasks.find(t => String(t.taskId) === String(taskSelect.value));
+		// Find the selected task details to pass to the sheet
+		const selectedTask = window.equipProjectTasks.find(t => String(t.taskId) === String(taskSelect.value));
 
-  const equipObj = {
-    sheetRow: document.getElementById('equip-sheet-row')?.value || "",
-    item: document.getElementById('equip-item-name')?.value || "",
-    value: document.getElementById('equip-qty')?.value || 0, 
-    unit: document.getElementById('equip-unit-select')?.value || "",
-    price: document.getElementById('equip-price')?.value || 0,
-    cost: document.getElementById('equip-cost')?.value || 0,
-    note: document.getElementById('equip-note')?.value || "",
-    taskId: taskSelect.value,
-    taskName: selectedTask ? (selectedTask.task || selectedTask.taskType) : "",
-    roomName: selectedTask ? selectedTask.roomName : "",
-    roomId: selectedTask ? (selectedTask.roomID || selectedTask.roomId) : ""
-  };
+		const equipObj = {
+			sheetRow: document.getElementById('equip-sheet-row')?.value || "",
+			item: document.getElementById('equip-item-name')?.value || "",
+			value: document.getElementById('equip-qty')?.value || 0, 
+			unit: document.getElementById('equip-unit-select')?.value || "",
+			price: document.getElementById('equip-price')?.value || 0,
+			cost: document.getElementById('equip-cost')?.value || 0,
+			note: document.getElementById('equip-note')?.value || "",
+			taskId: taskSelect.value,
+			taskName: selectedTask ? (selectedTask.task || selectedTask.taskType) : "",
+			roomName: selectedTask ? selectedTask.roomName : "",
+			roomId: selectedTask ? (selectedTask.roomID || selectedTask.roomId) : ""
+		};
 
-  // Validation
-  if (!equipObj.item || !equipObj.value || !equipObj.taskId) {
-    alert("Please complete Item, Quantity, and Task.");
-    return;
-  }
+		// Validation
+		if (!equipObj.item || !equipObj.value || !equipObj.taskId) {
+			alert("Please complete Item, Quantity, and Task.");
+			return;
+		}
 
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+		btn.disabled = true;
+		btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
 
-  google.script.run
-    .withSuccessHandler((newData) => {
-      btn.disabled = false;
-      btn.innerText = 'Save';
-      
-      // Update the table with new data
-      if (typeof renderEquipment === 'function') {
-        renderEquipment(newData);
-      }
-      
-      // Hide Modal
-      const modalEl = document.getElementById('equipmentModal');
-      const modalInstance = bootstrap.Modal.getInstance(modalEl);
-      if (modalInstance) modalInstance.hide();
-    })
-    .saveEquipmentData(equipObj);
-};
+		google.script.run
+			.withSuccessHandler((newData) => {
+				btn.disabled = false;
+				btn.innerText = 'Save';
+				
+				// Update the table with new data
+				if (typeof renderEquipment === 'function') {
+					renderEquipment(newData);
+				}
+				
+				// Hide Modal
+				const modalEl = document.getElementById('equipmentModal');
+				const modalInstance = bootstrap.Modal.getInstance(modalEl);
+				if (modalInstance) modalInstance.hide();
+			})
+			.saveEquipmentData(equipObj);
+	};
 
 
-window.handleEditEquipment = function(row) {
-  // 1. Find the item in the current list (ensure currentEquipList is global in JS_Equipment)
-  if (typeof currentEquipList === 'undefined') {
-    console.error("currentEquipList not found. Check JS_Equipment script.");
-    return;
-  }
-  
-  const equip = currentEquipList.find(m => m.sheetRow == row);
-  if (!equip) return;
+	window.handleEditEquipment = function(row) {
+		// 1. Find the item in the current list (ensure currentEquipList is global in JS_Equipment)
+		if (typeof currentEquipList === 'undefined') {
+			console.error("currentEquipList not found. Check JS_Equipment script.");
+			return;
+		}
+		
+		const equip = currentEquipList.find(m => m.sheetRow == row);
+		if (!equip) return;
 
-  loadDropdownCache(() => {
-    // 2. Populate standard dropdowns and set their values
-    populateSelect('equip-item-name', 'EquipmentType', equip.item);
-    populateSelect('equip-unit-select', 'EquipmentUnits', equip.unit);
+		loadDropdownCache(() => {
+			// 2. Populate standard dropdowns and set their values
+			populateSelect('equip-item-name', 'EquipmentType', equip.item);
+			populateSelect('equip-unit-select', 'EquipmentUnits', equip.unit);
 
-    // 3. Fetch Tasks to populate the task dropdown
-    google.script.run.withSuccessHandler(tasks => {
-      window.equipProjectTasks = tasks || [];
-      const select = document.getElementById('equip-task-select');
-      
-      if (select) {
-        select.innerHTML = window.equipProjectTasks.map(t => 
-          `<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
-        ).join('');
-        // Set the current task
-        select.value = equip.taskId;
-      }
-      
-      /**
-       * 4. Map data to HTML IDs safely.
-       * Logic: Look for 'value' in the data object (from getEquipmentData).
-       */
-      const fieldMap = {
-        'equip-sheet-row': equip.sheetRow,
-        'equip-qty': equip.value, // This is often where it fails if ID is different
-        'equip-price': equip.price,
-        'equip-cost': equip.cost,
-        'equip-note': equip.note
-      };
+			// 3. Fetch Tasks to populate the task dropdown
+			google.script.run.withSuccessHandler(tasks => {
+				window.equipProjectTasks = tasks || [];
+				const select = document.getElementById('equip-task-select');
+				
+				if (select) {
+					select.innerHTML = window.equipProjectTasks.map(t => 
+						`<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
+					).join('');
+					// Set the current task
+					select.value = equip.taskId;
+				}
+				
+				/**
+				 * 4. Map data to HTML IDs safely.
+				 * Logic: Look for 'value' in the data object (from getEquipmentData).
+				 */
+				const fieldMap = {
+					'equip-sheet-row': equip.sheetRow,
+					'equip-qty': equip.value, // This is often where it fails if ID is different
+					'equip-price': equip.price,
+					'equip-cost': equip.cost,
+					'equip-note': equip.note
+				};
 
-      // Loop through the map and only set values if the element exists
-      Object.keys(fieldMap).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.value = fieldMap[id] || "";
-        } else {
-          console.warn(`ID Mismatch: Element with ID "${id}" not found in HTML.`);
-        }
-      });
+				// Loop through the map and only set values if the element exists
+				Object.keys(fieldMap).forEach(id => {
+					const el = document.getElementById(id);
+					if (el) {
+						el.value = fieldMap[id] || "";
+					} else {
+						console.warn(`ID Mismatch: Element with ID "${id}" not found in HTML.`);
+					}
+				});
 
-      // 5. Update title and show modal
-      const titleEl = document.getElementById('equipModalTitle');
-      if (titleEl) titleEl.innerText = "Edit Equipment";
-      
-      const modalEl = document.getElementById('equipmentModal');
-      if (modalEl) {
-        bootstrap.Modal.getOrCreateInstance(modalEl).show();
-      }
-    }).getTasksData();
-  });
-};
+				// 5. Update title and show modal
+				const titleEl = document.getElementById('equipModalTitle');
+				if (titleEl) titleEl.innerText = "Edit Equipment";
+				
+				const modalEl = document.getElementById('equipmentModal');
+				if (modalEl) {
+					bootstrap.Modal.getOrCreateInstance(modalEl).show();
+				}
+			}).getTasksData();
+		});
+	};
 </script>
