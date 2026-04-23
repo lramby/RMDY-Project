@@ -43,10 +43,10 @@ const CONFIG = {
         STATE: 4,
         ZIP: 5,
         COUNTRY: 6,
-        CUSTOMERFIRST: 7,
-        CUSTOMERLAST: 8,
-        CUSTOMEREMAIL: 9,
-        CUSTOMERPHONE: 10
+        FIRSTNAME: 7,
+        LASTNAME: 8,
+        EMAIL: 9,
+        PHONE: 10
       }
     }
   },
