@@ -93,11 +93,10 @@ function createNewProject(formData) {
     }
   }
 
+	// Create PiD
   const now = new Date();
   const timeStr = Utilities.formatDate(now, Session.getScriptTimeZone(), "MMddyyHHmmss");
-  const typeSuffix = (formData.type === "Water") ? "WD" : "FD";
   const randomTail = Math.floor(1000 + Math.random() * 9000);
-  //const newPid = `${clientCode}-${typeSuffix}-${timeStr}${randomTail}`;
   const newPid = `${clientCode}-${timeStr}${randomTail}`;
 
   const manageSheet = ss.getSheetByName("Manage");
@@ -107,11 +106,7 @@ function createNewProject(formData) {
   sheetsToUpdate.forEach(sheetName => {
     const targetSheet = ss.getSheetByName(sheetName);
     if (targetSheet) {
-      if (sheetName === "Details") {
-        targetSheet.appendRow([newPid, "", "", "", "", "", formData.client]);
-      } else {
-        targetSheet.appendRow([newPid]);
-      }
+			targetSheet.appendRow([newPid]);
     }
   });
 
