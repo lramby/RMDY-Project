@@ -124,7 +124,7 @@ function getDatesData() {
       rowIndex: index + 2, // 1 for header, 1 for 0-indexing
       pid: row[cols.PID],
       loss: row[cols.LOSS],
-      duedate: row[cols.DUEDATE],
+      due: row[cols.DUE],
       contacted: row[cols.CONTACTED],
       assigned: row[cols.ASSIGNED],
       inspected: row[cols.INSPECTED],

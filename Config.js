@@ -54,7 +54,7 @@ const CONFIG = {
 			COLUMNS: {
 				PID: 0,
 				LOSS: 1,
-				DUEDATE: 2,
+				DUE: 2,
 				CONTACTED: 3,
 				ASSIGNED: 4,
 				INSPECTED: 5,
