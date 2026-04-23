@@ -1,0 +1,93 @@
+<script>
+
+	/**
+   * OPENS THE MODAL
+   */
+  function openDatesModal() {
+    if (!currentProjectData) return;
+    
+    const toInputDate = (str) => {
+      if(!str || str === '---' || str === "") return '';
+      let datePart = str.split(' ')[0];
+      let parts = datePart.split('/');
+      if(parts.length === 3) {
+        let m = parts[0].padStart(2, '0');
+        let d = parts[1].padStart(2, '0');
+        let y = parts[2];
+        return `${y}-${m}-${d}`;
+      }
+      return datePart;
+    };
+
+    try {
+      // Map global data to Modal Inputs
+      document.getElementById('edit-loss').value = toInputDate(currentProjectData.loss);
+      document.getElementById('edit-due').value = toInputDate(currentProjectData.due);
+      document.getElementById('edit-contacted').value = toInputDate(currentProjectData.contacted);
+      document.getElementById('edit-assigned').value = toInputDate(currentProjectData.assigned);
+      document.getElementById('edit-inspected').value = toInputDate(currentProjectData.inspected);
+      document.getElementById('edit-estimated').value = toInputDate(currentProjectData.estimated);
+      document.getElementById('edit-started').value = toInputDate(currentProjectData.started);
+      document.getElementById('edit-finished').value = toInputDate(currentProjectData.finished);
+      document.getElementById('edit-invoiced').value = toInputDate(currentProjectData.invoiced);
+      document.getElementById('edit-approved').value = toInputDate(currentProjectData.approved);
+      document.getElementById('edit-paid').value = toInputDate(currentProjectData.paid);
+
+      const modalElt = document.getElementById('datesModal');
+      let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
+      modal.show();
+      
+    } catch (err) {
+      console.error("Error populating modal:", err);
+    }
+  }
+
+  function submitDatesEdit() {
+    // If validateAndSubmit is global, this stays the same
+    if (typeof validateAndSubmit === 'function') {
+      validateAndSubmit('datesEditForm', function() {
+        executeDatesSave();
+      });
+    } else {
+      executeDatesSave();
+    }
+  }
+
+  function executeDatesSave() {
+    const btn = document.getElementById('datesSaveBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+    }
+
+    const formData = {
+      loss: document.getElementById('edit-loss').value,
+      due: document.getElementById('edit-due').value,
+      contacted: document.getElementById('edit-contacted').value,
+      assigned: document.getElementById('edit-assigned').value,
+      inspected: document.getElementById('edit-inspected').value,
+      estimated: document.getElementById('edit-estimated').value,
+      started: document.getElementById('edit-started').value,
+      finished: document.getElementById('edit-finished').value,
+      invoiced: document.getElementById('edit-invoiced').value,
+      approved: document.getElementById('edit-approved').value,
+      paid: document.getElementById('edit-paid').value
+    };
+
+    google.script.run
+      .withSuccessHandler(function(updatedData) {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('datesModal'));
+        if (modal) modal.hide();
+        
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Save Timeline';
+        }
+        
+        // Use the function name that matches your PageConfig
+        renderDates(updatedData);
+      })
+      .updateDatesData(formData);
+  }
+
+</script>

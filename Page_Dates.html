@@ -12,17 +12,6 @@
 
   <div id="dates-content" style="display:none;">
     
-    <!--
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 border-bottom pb-3">
-      <h2 class="mb-0 me-2 dynamic-text">Project Timeline</h2>
-      <div>
-        <button class="btn btn-outline-primary btn-sm me-2" onclick="openDatesModal()">
-          <i class="bi bi-pencil me-1"></i> Edit Dates
-        </button>
-        <span class="badge border border-dark text-dark px-3 py-2" id="dates-pid"></span>
-      </div>
-    </div>-->
-    
     <div class="row g-3">
       <div class="col-md-6">
         <div class="p-3 border rounded bg-light h-100">
@@ -79,84 +68,6 @@
             <span>Paid:</span> <span id="date-paid" class="fw-bold text-success"></span>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="datesModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content text-dark">
-      <div class="modal-header">
-        <h5 class="modal-title">Update Project Timeline</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <form id="datesEditForm">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label small fw-bold">Date of Loss</label>
-              <input type="date" id="edit-loss" class="form-control">
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label small fw-bold">Due Date</label>
-              <input type="date" id="edit-due" class="form-control">
-              <div class="invalid-feedback">Due date is required.</div>
-            </div>
-          </div>
-          
-          <hr>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Contacted</label>
-              <input type="date" id="edit-contacted" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Assigned</label>
-              <input type="date" id="edit-assigned" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Inspected</label>
-              <input type="date" id="edit-inspected" class="form-control">
-            </div>
-          </div>
-
-          <hr>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Estimated</label>
-              <input type="date" id="edit-estimated" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Started</label>
-              <input type="date" id="edit-started" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Finished</label>
-              <input type="date" id="edit-finished" class="form-control">
-            </div>
-          </div>
-
-          <hr>
-          <div class="row">
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Invoiced</label>
-              <input type="date" id="edit-invoiced" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Approved</label>
-              <input type="date" id="edit-approved" class="form-control">
-            </div>
-            <div class="col-md-4 mb-3">
-              <label class="form-label small fw-bold">Paid</label>
-              <input type="date" id="edit-paid" class="form-control">
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary px-4" id="datesSaveBtn" onclick="submitDatesEdit()">Save Timeline</button>
       </div>
     </div>
   </div>
