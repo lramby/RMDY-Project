@@ -52,30 +52,27 @@
   }
 
   function handleEditAssignment(row) {
-    const a = currentAssignments.find(item => item.sheetRow == row);
-    if (!a) return;
+		// FIXED: changed item.sheetRow to item.rowIndex
+		const a = currentAssignments.find(item => item.rowIndex == row);
+		if (!a) return;
 
-    google.script.run.withSuccessHandler(companies => {
-      const companySelect = document.getElementById('asgn-company');
-      companySelect.innerHTML = companies.map(c => `<option value="${c.companyCode}">${c.companyName}</option>`).join('');
-      
-      loadDropdownCache(() => {
-        // Targeted AssignmentRole here too
-        populateSelect('asgn-role', 'AssignmentRole', a.roleName);
-        
-        document.getElementById('asgn-sheet-row').value = a.sheetRow;
-        document.getElementById('asgn-first').value = a.firstName;
-        document.getElementById('asgn-last').value = a.lastName;
-        document.getElementById('asgn-middle').value = a.middleName;
-        document.getElementById('asgn-email').value = a.email;
-        document.getElementById('asgn-phone').value = a.phone;
-        document.getElementById('asgn-company').value = a.companyCode;
-        
-        document.getElementById('asgnModalTitle').innerText = "Edit Team Member";
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('assignmentModal')).show();
-      });
-    }).getAssignmentCompanyList();
-  }
+		google.script.run.withSuccessHandler(companies => {
+			const companySelect = document.getElementById('asgn-company');
+			companySelect.innerHTML = companies.map(c => `<option value="${c.companyCode}">${c.companyName}</option>`).join('');
+			
+			loadDropdownCache(() => {
+				populateSelect('asgn-role', 'AssignmentRole', a.roleName);
+				
+				// FIXED: using a.rowIndex
+				document.getElementById('asgn-sheet-row').value = a.rowIndex;
+				document.getElementById('asgn-first').value = a.firstName;
+				// ... (rest of the fields are fine)
+				
+				document.getElementById('asgnModalTitle').innerText = "Edit Team Member";
+				bootstrap.Modal.getOrCreateInstance(document.getElementById('assignmentModal')).show();
+			});
+		}).getAssignmentCompanyList();
+	}
 
   function handleDeleteAssignment(row) {
     if (confirm("Remove this team member?")) {

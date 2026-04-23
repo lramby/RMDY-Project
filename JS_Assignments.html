@@ -34,25 +34,26 @@
       return;
     }
     
-    currentAssignments.forEach((a) => {
-      tbody.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td>
-            <div class="fw-bold text-primary">${a.firstName} ${a.lastName}</div>
-            <div class="small"><strong>Role:</strong> ${a.roleName}</div>
-            <div class="small"><strong>Company:</strong> ${a.companyCode}</div>
-            <div class="small text-muted">${a.email} | ${a.phone}</div>
-          </td>
-          <td class="text-end align-middle">
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditAssignment(${a.sheetRow})">
-              <i class="bi bi-pencil"></i>
-            </button>
-            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteAssignment(${a.sheetRow})">
-              <i class="bi bi-trash"></i>
-            </button>
-          </td>
-        </tr>`);
-    });
+    // Inside renderAssignments(data)
+		currentAssignments.forEach((a) => {
+			tbody.insertAdjacentHTML('beforeend', `
+				<tr>
+					<td>
+						<div class="fw-bold text-primary">${a.firstName} ${a.lastName}</div>
+						<div class="small"><strong>Role:</strong> ${a.roleName}</div>
+						<div class="small"><strong>Company:</strong> ${a.companyCode}</div>
+						<div class="small text-muted">${a.email} | ${a.phone}</div>
+					</td>
+					<td class="text-end align-middle">
+						<button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditAssignment(${a.rowIndex})">
+							<i class="bi bi-pencil"></i>
+						</button>
+						<button class="btn btn-sm btn-outline-danger" onclick="handleDeleteAssignment(${a.rowIndex})">
+							<i class="bi bi-trash"></i>
+						</button>
+					</td>
+				</tr>`);
+		});
   }
 
   // Exposure for Global Header Buttons

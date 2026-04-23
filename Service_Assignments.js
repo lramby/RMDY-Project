@@ -29,17 +29,13 @@ function saveAssignmentData(assignObj) {
   const sheet = ss.getSheetByName(CONFIG.TABLES.ASSIGNMENTS.NAME);
   const cols = CONFIG.TABLES.ASSIGNMENTS.COLUMNS;
   const activePid = getActivePid();
-  
-  // Clean helper to ensure strings and handle nulls
   const clean = (val) => String(val || "").trim();
 
-  if (assignObj.rowIndex && Number(assignObj.rowIndex) > 1) {
-    /**
-     * UPDATE EXISTING
-     */
-    const rowNum = Number(assignObj.rowIndex);
-    
-    // We do not overwrite the PID or ASSIGNMENTID on updates to maintain integrity
+  // processSaveAssignment sends "sheetRow"
+  const rowNum = Number(assignObj.sheetRow);
+
+  if (rowNum && rowNum > 1) {
+    // UPDATE EXISTING
     sheet.getRange(rowNum, cols.ROLENAME + 1).setValue(clean(assignObj.roleName));
     sheet.getRange(rowNum, cols.FIRSTNAME + 1).setValue(clean(assignObj.firstName));
     sheet.getRange(rowNum, cols.LASTNAME + 1).setValue(clean(assignObj.lastName));
@@ -47,17 +43,11 @@ function saveAssignmentData(assignObj) {
     sheet.getRange(rowNum, cols.EMAIL + 1).setValue(clean(assignObj.email));
     sheet.getRange(rowNum, cols.PHONE + 1).setValue(clean(assignObj.phone));
     sheet.getRange(rowNum, cols.COMPANYCODE + 1).setValue(clean(assignObj.companyCode));
-    
   } else {
-    /**
-     * CREATE NEW
-     */
-    // Generate ID: [PiD]-ASGN-[Timestamp] 
-    // Format: "12345-ASGN-88291"
+    // CREATE NEW
     const timestamp = new Date().getTime().toString().slice(-5); 
     const newId = `${activePid}-ASGN-${timestamp}`;
 
-    // Create a full row array based on CONFIG column indices
     const newRow = [];
     newRow[cols.PID] = activePid;
     newRow[cols.ASSIGNMENTID] = newId;
@@ -71,7 +61,6 @@ function saveAssignmentData(assignObj) {
 
     sheet.appendRow(newRow);
   }
-  
   return getAssignmentsDataForActivePid();
 }
 
@@ -103,4 +92,11 @@ function getAssignmentCompanyList() {
       companyCode: companyCode
     };
   }).filter(c => c.companyCode);
+}
+
+function loadAssignments() {
+  // ... loader logic ...
+  google.script.run
+    .withSuccessHandler(renderAssignments)
+    .getAssignmentsDataForActivePid(); // Call the FILTERED version
 }
