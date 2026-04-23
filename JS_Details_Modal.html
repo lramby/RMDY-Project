@@ -16,7 +16,7 @@
         populateSelect('edit-state', 'States');
         populateSelect('edit-country', 'Countries');
 
-        document.getElementById('edit-address').value = currentProjectData.address || '';
+        document.getElementById('edit-address1').value = currentProjectData.address || '';
         document.getElementById('edit-address2').value = currentProjectData.address2 || '';
         document.getElementById('edit-city').value = currentProjectData.city || '';
         document.getElementById('edit-zip').value = currentProjectData.zip || '';
@@ -55,7 +55,7 @@
     saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
 
     const formData = {
-      address: document.getElementById('edit-address').value,
+      address: document.getElementById('edit-address1').value,
       address2: document.getElementById('edit-address2').value,
       city: document.getElementById('edit-city').value,
       state: document.getElementById('edit-state').value,

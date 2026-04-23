@@ -105,10 +105,10 @@ function getDetailsData() {
       state: row[cols.STATE],
       zip: row[cols.ZIP],
       country: row[cols.COUNTRY],
-      customerFirst: row[cols.CUSTOMERFIRST],
-      customerLast: row[cols.CUSTOMERLAST],
-      customerEmail: row[cols.CUSTOMEREMAIL],
-      customerPhone: row[cols.CUSTOMERPHONE]
+      firstName: row[cols.FIRSTNAME],
+      lastName: row[cols.LASTNAME],
+      email: row[cols.EMAIL],
+      phone: row[cols.PHONE]
     };
   });
 }

@@ -26,7 +26,7 @@
       };
 
       setEl('display-pid', data.pid);
-      setEl('display-address', `${data.address || ''} ${data.address2 || ''}`.trim());
+      setEl('display-address', `${data.address1 || ''} ${data.address2 || ''}`.trim());
       setEl('display-location', `${data.city || ''}, ${data.state || ''} ${data.zip || ''}`.trim());
       setEl('display-email', data.email);
       setEl('display-customer', `${data.firstName || ''} ${data.lastName || ''}`.trim());
