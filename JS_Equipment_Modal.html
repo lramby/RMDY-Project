@@ -23,7 +23,7 @@
 				const select = document.getElementById('equip-task-select');
 				if (select) {
 					select.innerHTML = '<option value="">Select Task...</option>' + 
-					window.equipProjectTasks.map(t => `<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
+					window.equipProjectTasks.map(t => `<option value="${t.taskId}">${t.taskName} (${t.roomName})</option>`
 					).join('');
 				}else {'No tasks in database.'}			
 
