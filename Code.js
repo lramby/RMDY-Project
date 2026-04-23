@@ -51,7 +51,7 @@ function getTasksData() {
     return {
       rowIndex: index + 2, // 1 for header, 1 for 0-indexing
       pid: row[cols.PID],
-      task: row[cols.TASK],
+      taskName: row[cols.TASKNAME],
       value: row[cols.VALUE],
       roomName: row[cols.ROOMNAME],
       roomID: row[cols.ROOMID],
