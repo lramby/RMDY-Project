@@ -1,46 +1,41 @@
 <script>
 
   function openTaskModal(index = null) {
-  loadDropdownCache(() => {
-    const form = document.getElementById('taskEditForm');
-    if (form) form.reset();
-    
-    // 1. Populate the select. 
-    // IF populateSelect supports a callback, use it. 
-    // Otherwise, we set the value after population.
-    populateSelect('edit-task-type', 'Tasks'); 
+		loadDropdownCache(() => {
+			const form = document.getElementById('taskEditForm');
+			if (form) form.reset();
 
-    if (index !== null) {
-      const task = currentTasks[index];
-      document.getElementById('taskModalTitle').innerText = "Edit Task";
-      document.getElementById('task-row-index').value = task.sheetRow;
-      document.getElementById('task-unique-id').value = task.taskId || "";
-      document.getElementById('edit-task-value').value = task.value;
-      
-      // FIX: Use a tiny timeout or ensure populateSelect is finished
-      // This ensures the DOM has rendered the <option> tags before we pick one
-      setTimeout(() => {
-         document.getElementById('edit-task-type').value = task.taskName;
-      }, 50); 
+			if (index !== null) {
+				const task = currentTasks[index];
+				document.getElementById('taskModalTitle').innerText = "Edit Task";
+				document.getElementById('task-row-index').value = task.sheetRow;
+				document.getElementById('task-unique-id').value = task.taskId || "";
+				document.getElementById('edit-task-value').value = task.value;
 
-      // Note: task.price/cost from getTasksData are formatted strings (e.g. "$10.00")
-      // You must strip currency symbols if you want them to show in an <input type="number">
-      document.getElementById('edit-task-price').value = task.price.replace(/[^0-9.-]+/g,"");
-      document.getElementById('edit-task-cost').value = task.cost.replace(/[^0-9.-]+/g,"");
-      document.getElementById('edit-task-note').value = task.note === "-" ? "" : task.note;
-      
-      loadRoomDropdown(task.roomId);
-    } else {
-      document.getElementById('taskModalTitle').innerText = "Add New Task";
-      document.getElementById('task-row-index').value = ""; 
-      document.getElementById('task-unique-id').value = "";
-      loadRoomDropdown(""); 
-    }
+				// PASS A CALLBACK: This tells populateSelect what to do once it's done
+				populateSelect('edit-task-type', 'Tasks', () => {
+					document.getElementById('edit-task-type').value = task.taskName;
+				});
 
-    const modalElt = document.getElementById('taskModal');
-    bootstrap.Modal.getOrCreateInstance(modalElt).show();
-  });
-}
+				document.getElementById('edit-task-price').value = task.price.replace(/[^0-9.-]+/g, "");
+				document.getElementById('edit-task-cost').value = task.cost.replace(/[^0-9.-]+/g, "");
+				document.getElementById('edit-task-note').value = task.note === "-" ? "" : task.note;
+
+				loadRoomDropdown(task.roomId);
+			} else {
+				document.getElementById('taskModalTitle').innerText = "Add New Task";
+				document.getElementById('task-row-index').value = "";
+				document.getElementById('task-unique-id').value = "";
+				
+				// Still populate for new tasks, but no callback needed
+				populateSelect('edit-task-type', 'Tasks'); 
+				loadRoomDropdown("");
+			}
+
+			const modalElt = document.getElementById('taskModal');
+			bootstrap.Modal.getOrCreateInstance(modalElt).show();
+		});
+	}
 
 
   function submitTaskEdit() {
