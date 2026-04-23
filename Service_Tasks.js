@@ -119,23 +119,33 @@ function deleteTask(rowIdx) {
 *========================================*/
 
 function getRoomOptionsForTask() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
-  if (!rowIndex) return [];
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const userProperties = PropertiesService.getUserProperties();
+    const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
+    
+    if (!rowIndex) return [];
 
-  const pid = ss.getSheetByName("Manage").getRange(Number(rowIndex), 1).getValue();
-  const fpSheet = ss.getSheetByName("Rooms");
-  if (!fpSheet) return [];
-  
-  const fpData = fpSheet.getDataRange().getValues();
+    // Get the current Project ID from the Manage sheet
+    const pid = ss.getSheetByName("Manage").getRange(Number(rowIndex), 1).getValue();
+    
+    // UPDATED: Points to the new sheet name "Rooms"
+    const roomSheet = ss.getSheetByName("Rooms");
+    if (!roomSheet) return [];
+    
+    const roomData = roomSheet.getDataRange().getValues();
 
-  return fpData.slice(1)
-    .filter(row => String(row[0]) === String(pid))
-    .map(row => ({
-      id: row[6], // RoomID
-      display: row[2] ? `${row[1]} (#${row[2]})` : row[1]
-    }));
+    // Filter by Project ID and map to the dropdown format
+    return roomData.slice(1)
+      .filter(row => String(row[0]) === String(pid))
+      .map(row => ({
+        id: row[6], // Unique Room ID (Column G)
+        display: row[2] ? `${row[1]} (#${row[2]})` : row[1] // "Room Name (#Num)"
+      }));
+  } catch (e) {
+    console.error("Error in getRoomOptionsForTask: " + e.toString());
+    return [];
+  }
 }
 
 /**
