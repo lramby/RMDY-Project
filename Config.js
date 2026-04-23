@@ -115,7 +115,22 @@ const CONFIG = {
 				COST: 9,
 				NOTE: 10
 			}
-		}
+		},
+		ROOMS: {
+      NAME: "Rooms",
+      COLUMNS: {
+        PID: 0,
+				ROOMNAME: 1,
+				ROOMNUMBER: 2,
+				LENGTH: 3,
+				WIDTH: 4,
+				HEIGHT: 5,
+				ROOMID: 6,
+				LENGTHUNIT: 7,
+				WIDTHUNIT: 8,
+				HEIGHTUNIT: 9
+      }
+    },
   },
   PAGES: {
     EQUIPMENT: {
