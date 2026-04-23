@@ -96,11 +96,11 @@ function getAssignmentCompanyList() {
   const cols = CONFIG.TABLES.CONTACTS.COLUMNS;
   
   return data.slice(1).map(row => {
-    const name = row[cols.NAME];
-    const code = row[cols.CODE];
+    const name = row[cols.COMPANYNAME];
+    const code = row[cols.COMPANYCODE];
     return {
-      name: `${name} (${code})`,
-      code: code
+      name: `${companyName} (${companyCode})`,
+      code: companyCode
     };
   }).filter(c => c.code);
 }
