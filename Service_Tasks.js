@@ -125,7 +125,7 @@ function getRoomOptionsForTask() {
   if (!rowIndex) return [];
 
   const pid = ss.getSheetByName("Manage").getRange(Number(rowIndex), 1).getValue();
-  const fpSheet = ss.getSheetByName("Floorplans");
+  const fpSheet = ss.getSheetByName("Rooms");
   if (!fpSheet) return [];
   
   const fpData = fpSheet.getDataRange().getValues();

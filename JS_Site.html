@@ -53,25 +53,6 @@
       return;
     }
 
-    /*
-    // table version
-    currentRooms.forEach((room, index) => {
-      const area = (parseFloat(room.l || 0) * parseFloat(room.w || 0)).toFixed(2);
-      tbody.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td><strong>${room.name}</strong></td>
-          <td>${room.roomNum || '-'}</td>
-          <td>${room.l}' x ${room.w}' x ${room.h}'</td>
-          <td>${area}</td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="openRoomModal(${index})"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteRoom(${room.sheetRow})"><i class="bi bi-trash"></i></button>
-          </td>
-        </tr>
-      `);
-    });
-    */
-
     //card version
     currentRooms.forEach((room, index) => {
       const area = (parseFloat(room.l || 0) * parseFloat(room.w || 0)).toFixed(2);
@@ -94,7 +75,6 @@
         </tr>
       `);
     });
-
 
   }
 

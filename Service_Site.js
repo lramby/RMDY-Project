@@ -44,7 +44,7 @@ function getSiteData() {
 
 function getRoomData() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Floorplans");
+  const sheet = ss.getSheetByName("Rooms");
   const props = PropertiesService.getUserProperties();
   let activePid = props.getProperty('ACTIVE_PROJECT_ID');
   
@@ -74,7 +74,7 @@ function getRoomData() {
 
 function saveRoomData(room) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const fpSheet = ss.getSheetByName("Floorplans");
+  const fpSheet = ss.getSheetByName("Rooms");
   const props = PropertiesService.getUserProperties();
   
   let pid = props.getProperty('ACTIVE_PROJECT_ID');
@@ -84,7 +84,7 @@ function saveRoomData(room) {
   let roomId = room.row ? fpSheet.getRange(room.row, 7).getValue() : (pid + "-" + new Date().getTime());
   const newDisplayName = room.roomNum ? `${room.name} (#${room.roomNum})` : room.name;
 
-  // 2. Prep values for Floorplans (7 columns)
+  // 2. Prep values for Rooms (7 columns)
   const vals = [[pid, room.name, room.roomNum, room.l, room.w, room.h, roomId]];
   
   if (room.row) {
@@ -106,10 +106,10 @@ function saveRoomData(room) {
 function deleteRoom(rowIdx) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const fpSheet = ss.getSheetByName("Floorplans");
+    const fpSheet = ss.getSheetByName("Rooms");
     const taskSheet = ss.getSheetByName("Tasks");
 
-    // 1. Get the RoomID from Column G (7) of the Floorplans sheet
+    // 1. Get the RoomID from Column G (7) of the Rooms sheet
     const roomIdToDelete = fpSheet.getRange(rowIdx, 7).getValue();
 
     // 2. Check if RoomID exists in the Tasks sheet (Column E / Index 4)
