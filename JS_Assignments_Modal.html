@@ -5,7 +5,7 @@
     google.script.run.withSuccessHandler(companies => {
       const companySelect = document.getElementById('asgn-company');
       companySelect.innerHTML = '<option value="">Select Company...</option>' + 
-        companies.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+        companies.map(c => `<option value="${c.companyCode}">${c.companyName}</option>`).join('');
 
       // 2. Load Roles using the GLOBAL dropdown type "AssignmentRole"
       loadDropdownCache(() => {
@@ -36,7 +36,7 @@
       companyCode: document.getElementById('asgn-company').value
     };
 
-    if (!assignObj.role || !assignObj.firstName || !assignObj.lastName) {
+    if (!assignObj.roleName || !assignObj.firstName || !assignObj.lastName) {
       alert("Role and Name are required.");
       return;
     }
@@ -57,7 +57,7 @@
 
     google.script.run.withSuccessHandler(companies => {
       const companySelect = document.getElementById('asgn-company');
-      companySelect.innerHTML = companies.map(c => `<option value="${c.code}">${c.name}</option>`).join('');
+      companySelect.innerHTML = companies.map(c => `<option value="${c.companyCode}">${c.companyName}</option>`).join('');
       
       loadDropdownCache(() => {
         // Targeted AssignmentRole here too
