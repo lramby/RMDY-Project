@@ -33,7 +33,7 @@ function getTasksData() {
       // 3. Return the object with formatted strings
       return {
         pid: row[COLS.PID] ? String(row[COLS.PID]) : "",
-        taskName: row[COLS.TASK] ? String(row[COLS.TASK]) : "",
+        taskName: row[COLS.TASK] ? String(row[COLS.TASKNAME]) : "",
         value: row[COLS.VALUE] || 0,
         unit: row[COLS.UNIT] ? String(row[COLS.UNIT]) : "",
         roomName: row[COLS.ROOMNAME] || "No Room Assigned",
