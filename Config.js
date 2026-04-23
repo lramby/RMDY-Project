@@ -65,6 +65,20 @@ const CONFIG = {
 				APPROVED: 10,
 				PAID: 11
 			}
+		},
+		ASSIGNMENTS: {
+			NAME: "Assignments",
+			COLUMNS: {
+				PID: 0,
+				ASSIGNMENTID: 1,
+				ROLENAME: 2,
+				FIRSTNAME: 3,
+				LASTNAME: 4,
+				MIDDLENAME: 5,
+				EMAIL: 6,
+				PHONE: 7,
+				COMPANYCODE: 8
+			}
 		}
   },
   PAGES: {

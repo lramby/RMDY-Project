@@ -137,3 +137,25 @@ function getDatesData() {
     };
   });
 }
+
+function getAssignmentsData() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.ASSIGNMENTS.NAME);
+  const values = sheet.getDataRange().getValues();
+  const cols = CONFIG.TABLES.ASSIGNMENTS.COLUMNS;
+  
+  // Skip header and map to objects
+  return values.slice(1).map((row, index) => {
+    return {
+      rowIndex: index + 2, // 1 for header, 1 for 0-indexing
+      pid: row[cols.PID],
+			assignmentID: row[cols.ASSIGNMENTID],
+      roleName: row[cols.ROLENAME],
+      firstName: row[cols.FIRSTNAME],
+      lastName: row[cols.LASTNAME],
+      middleName: row[cols.MIDDLENAME],
+      email: row[cols.EMAIL],
+      phone: row[cols.PHONE],
+      companyCode: row[cols.COMPANYCODE]
+    };
+  });
+}

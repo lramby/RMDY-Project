@@ -1,0 +1,3 @@
+The configs are in Config.gs
+The helper functions are in Code.gs
+Adapt Assignments to use the config col location settings from the helper and the FORMATs from config.

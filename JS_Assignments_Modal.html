@@ -26,16 +26,16 @@ function openAssignmentModal() {
     
     const assignObj = {
       sheetRow: document.getElementById('asgn-sheet-row').value,
-      role: document.getElementById('asgn-role').value,
-      first: document.getElementById('asgn-first').value,
-      last: document.getElementById('asgn-last').value,
-      middle: document.getElementById('asgn-middle').value,
+      roleName: document.getElementById('asgn-role').value,
+      firstName: document.getElementById('asgn-first').value,
+      lastName: document.getElementById('asgn-last').value,
+      middleName: document.getElementById('asgn-middle').value,
       email: document.getElementById('asgn-email').value,
       phone: document.getElementById('asgn-phone').value,
       companyCode: document.getElementById('asgn-company').value
     };
 
-    if (!assignObj.role || !assignObj.first || !assignObj.last) {
+    if (!assignObj.role || !assignObj.firstName || !assignObj.lastName) {
       alert("Role and Name are required.");
       return;
     }
@@ -60,12 +60,12 @@ function openAssignmentModal() {
       
       loadDropdownCache(() => {
         // Targeted AssignmentRole here too
-        populateSelect('asgn-role', 'AssignmentRole', a.role);
+        populateSelect('asgn-role', 'AssignmentRole', a.roleName);
         
         document.getElementById('asgn-sheet-row').value = a.sheetRow;
-        document.getElementById('asgn-first').value = a.first;
-        document.getElementById('asgn-last').value = a.last;
-        document.getElementById('asgn-middle').value = a.middle;
+        document.getElementById('asgn-first').value = a.firstName;
+        document.getElementById('asgn-last').value = a.lastName;
+        document.getElementById('asgn-middle').value = a.middleName;
         document.getElementById('asgn-email').value = a.email;
         document.getElementById('asgn-phone').value = a.phone;
         document.getElementById('asgn-company').value = a.companyCode;
