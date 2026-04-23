@@ -22,10 +22,10 @@
 				window.equipProjectTasks = tasks || [];
 				const select = document.getElementById('equip-task-select');
 				if (select) {
-					select.innerHTML = '<option value="">Select Company...</option>' + 
+					select.innerHTML = '<option value="">Select Task...</option>' + 
 					window.equipProjectTasks.map(t => `<option value="${t.taskId}">${t.task || t.taskType} (${t.roomName})</option>`
 					).join('');
-				}			
+				}else {'No tasks in database.'}			
 
 				// 3. Reset all input fields safely
 				const fields = ['equip-sheet-row', 'equip-qty', 'equip-unit-select', 'equip-price', 'equip-cost', 'equip-note'];

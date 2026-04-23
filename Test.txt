@@ -1,0 +1,24 @@
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td><strong>${m.item}</strong></td>
+              </tr>
+              <tr>
+                <td>Quantity: <span class="fw-semibold">${m.qty}</span></td>
+              </tr>
+              <tr>
+                <td>Task: <span class="fw-semibold">${m.taskName}</span></td>
+              </tr>
+              <tr>
+                <td>Room: <span class="fw-semibold">${m.roomName}</span></td>
+              </tr>
+            </table>
+          </td>
+          
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditMaterial(${m.sheetRow})"><i class="bi bi-pencil"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteMaterial(${m.sheetRow})"><i class="bi bi-trash"></i></button>
+          </td>
+        </tr>
+				

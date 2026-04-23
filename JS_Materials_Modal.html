@@ -53,7 +53,7 @@
     const materObj = {
       sheetRow: document.getElementById('mat-sheet-row').value,
       item: typeSelect.value,
-      qty: document.getElementById('mat-qty').value,
+      value: document.getElementById('mat-qty').value,
       taskId: taskSelect.value,
       taskName: selectedTask.taskType,
       roomName: selectedTask.roomName,
@@ -120,7 +120,7 @@
         select.innerHTML = currentProjectTasks.map(t => `<option value="${t.taskId}">${t.taskType} (${t.roomName})</option>`).join('');
         
         document.getElementById('mat-sheet-row').value = mat.sheetRow;
-        document.getElementById('mat-qty').value = mat.qty;
+        document.getElementById('mat-qty').value = mat.value;
         document.getElementById('mat-task-select').value = mat.taskId;
         document.getElementById('matModalTitle').innerText = "Edit Material";
 

@@ -43,29 +43,48 @@
     
     currentMaterials.forEach((m) => {
       tbody.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td>
-            <table>
-              <tr>
-                <td><strong>${m.item}</strong></td>
-              </tr>
-              <tr>
-                <td>Quantity: <span class="fw-semibold">${m.qty}</span></td>
-              </tr>
-              <tr>
-                <td>Task: <span class="fw-semibold">${m.taskName}</span></td>
-              </tr>
-              <tr>
-                <td>Room: <span class="fw-semibold">${m.roomName}</span></td>
-              </tr>
-            </table>
+				<tr class="align-middle">
+          <td class="p-0"> 
+            <div class="d-flex align-items-center w-100 p-3">
+              <div class="flex-grow-1">
+                <div class="row g-3">
+                  
+                  <div class="col-12 col-md-6">
+                    <div class="fw-bold text-primary">${m.item}</div>
+                    <div class="small text-muted text-wrap">Note: ${m.note || '---'}</div>
+                    <div class="small mt-1">
+                      <span class="badge bg-light text-dark border">${m.roomName}</span>
+											<span class="badge bg-light text-dark border">${m.taskName}</span>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-6 border-start border-md-start">
+                    <div class="">Qty: <span class="fw-bold">${m.value} ${m.unit}</span></div>
+                    <div class="">Price: <span class="fw-bold">${m.price}</span> 
+                      <span class="text-muted" style="font-size: 0.75rem;">(Sub: ${m.priceSubTotal})</span>
+                    </div>
+                    <div class="">Cost: <span class="fw-bold">${m.cost}</span>
+                      <span class="text-muted" style="font-size: 0.75rem;">(Sub: ${m.costSubTotal})</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="ms-3 d-flex flex-column gap-2">
+                <button class="btn btn-sm btn-outline-primary" onclick="handleEditMaterial(${m.sheetRow})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteMaterial(${m.sheetRow})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+
+            </div>
           </td>
-          
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditMaterial(${m.sheetRow})"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteMaterial(${m.sheetRow})"><i class="bi bi-trash"></i></button>
-          </td>
-        </tr>`);
+        </tr>
+				
+				`);
     });
   }
 

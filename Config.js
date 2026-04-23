@@ -99,6 +99,22 @@ const CONFIG = {
 				PHONE: 13,
 				NOTES: 14
 			}
+		},
+		MATERIALS: {
+			NAME: "Materials",
+			COLUMNS: {
+				PID: 0,
+				ROOMID: 1,
+				TASKID: 2,
+				ROOMNAME: 3,
+				TASKNAME: 4,
+				ITEMNAME: 5,
+				VALUE: 6,
+				UNIT: 7,
+				PRICE: 8,
+				COST: 9,
+				NOTE: 10
+			}
 		}
   },
   PAGES: {

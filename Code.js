@@ -84,7 +84,7 @@ function getEquipmentData() {
       unit: row[cols.UNIT],
       price: row[cols.PRICE],
       cost: row[cols.COST],
-      note: row[cols.NOTE],
+      note: row[cols.NOTE]
     };
   });
 }
@@ -183,6 +183,29 @@ function getContactsData() {
 			email: row[cols.EMAIL],
 			phone: row[cols.PHONE],
 			notes: row[cols.NOTES]
+    };
+  });
+}
+
+function getMaterialsData() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.MATERIALS.NAME);
+  const values = sheet.getDataRange().getValues();
+  const cols = CONFIG.TABLES.MATERIALS.COLUMNS;
+  
+  // Skip header and map to objects
+  return values.slice(1).map((row, index) => {
+    return {
+      PiD: row[cols.PID],
+			roomID: row[cols.ROOMID],
+			taskID: row[cols.TASKID],
+			roomName: row[cols.ROOMNAME],
+			taskName: row[cols.TASKNAME],
+			itemName: row[cols.ITEMNAME],
+			value: row[cols.VALUE],
+			unit: row[cols.UNIT],
+			price: row[cols.PRICE],
+			cost: row[cols.COST],
+			note: row[cols.NOTE]
     };
   });
 }

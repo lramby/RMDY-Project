@@ -1,16 +1,19 @@
 /**
  * Service_Materials.gs
+ * Refactored to use CONFIG object and updated column mapping.
  */
+
 function getMaterialsData() {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName("Materials");
+    const sheet = ss.getSheetByName(CONFIG.TABLES.MATERIALS.NAME);
     const manageSheet = ss.getSheetByName("Manage");
+    const cols = CONFIG.TABLES.MATERIALS.COLUMNS;
     
     const userProperties = PropertiesService.getUserProperties();
     const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
     
-    // 1. If no project is selected, return an empty array immediately
+    // 1. If no project is selected, return an empty array
     if (!rowIndex || !manageSheet) return [];
 
     const selectedPid = manageSheet.getRange(Number(rowIndex), 1).getValue();
@@ -18,24 +21,28 @@ function getMaterialsData() {
 
     // 2. Safety check for the Materials sheet existence
     if (!sheet) {
-      console.error("Materials sheet not found");
+      console.error("Materials sheet not found: " + CONFIG.TABLES.MATERIALS.NAME);
       return [];
     }
 
     const data = sheet.getDataRange().getValues();
     if (data.length < 2) return [];
 
-    // 3. Map with updated columns (A through G)
+    // 3. Map using CONFIG indices
     return data.slice(1)
       .map((row, index) => {
         return {
-          pid: row[0] ? String(row[0]) : "",       // Col A (1)
-          item: row[1] ? String(row[1]) : "",      // Col B (2)
-          qty: row[2] || 0,                        // Col C (3)
-          taskName: row[3] ? String(row[3]) : "",  // Col D (4)
-          taskId: row[4] ? String(row[4]) : "",    // Col E (5)
-          roomName: row[5] ? String(row[5]) : "",  // Col F (6) - NEW
-          roomId: row[6] ? String(row[6]) : "",    // Col G (7) - NEW
+          pid: row[cols.PID] ? String(row[cols.PID]) : "",
+          roomId: row[cols.ROOMID] ? String(row[cols.ROOMID]) : "",
+          taskId: row[cols.TASKID] ? String(row[cols.TASKID]) : "",
+          roomName: row[cols.ROOMNAME] ? String(row[cols.ROOMNAME]) : "",
+          taskName: row[cols.TASKNAME] ? String(row[cols.TASKNAME]) : "",
+          item: row[cols.ITEMNAME] ? String(row[cols.ITEMNAME]) : "",
+          value: row[cols.VALUE] || 0, // Changed from qty to value
+          unit: row[cols.UNIT] || "",
+          price: row[cols.PRICE] || 0,
+          cost: row[cols.COST] || 0,
+          note: row[cols.NOTE] || "",
           sheetRow: index + 2
         };
       })
@@ -43,63 +50,56 @@ function getMaterialsData() {
       
   } catch (e) {
     console.error("Error in getMaterialsData: " + e.toString());
-    return []; // Return empty array so the UI can at least stop spinning
+    return [];
   }
 }
 
 function saveMaterialsData(materObj) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Materials");
+  const sheet = ss.getSheetByName(CONFIG.TABLES.MATERIALS.NAME);
+  const cols = CONFIG.TABLES.MATERIALS.COLUMNS;
   
-  // MAPPING (matches Equipment structure): 
-  // Col 2: Item (B)
-  // Col 3: Qty (C)
-  // Col 4: TaskName (D)
-  // Col 5: TaskID (E)
-  // Col 6: RoomName (F)
-  // Col 7: RoomID (G)
-  const rowValues = [[
-    String(materObj.item), 
-    Number(materObj.qty), 
-    String(materObj.taskName), 
-    String(materObj.taskId),
-    String(materObj.roomName),
-    String(materObj.roomId)
-  ]];
+  // Create an array the size of our column definitions to ensure correct placement
+  // We use the indices from CONFIG to place data in the correct slots
+  const rowValues = [];
+  rowValues[cols.ROOMID] = String(materObj.roomId);
+  rowValues[cols.TASKID] = String(materObj.taskId);
+  rowValues[cols.ROOMNAME] = String(materObj.roomName);
+  rowValues[cols.TASKNAME] = String(materObj.taskName);
+  rowValues[cols.ITEMNAME] = String(materObj.item);
+  rowValues[cols.VALUE] = Number(materObj.value); // Maps to the VALUE column
+  rowValues[cols.UNIT] = String(materObj.unit || "");
+  rowValues[cols.PRICE] = Number(materObj.price || 0);
+  rowValues[cols.COST] = Number(materObj.cost || 0);
+  rowValues[cols.NOTE] = String(materObj.note || "");
 
   if (materObj.sheetRow && Number(materObj.sheetRow) > 0) {
-    // Update starting at Col B (2), spanning 6 columns
-    sheet.getRange(Number(materObj.sheetRow), 2, 1, 6).setValues(rowValues);
+    // Update existing row: Start at index 1 (Col B) because PID (index 0) usually stays the same
+    // We calculate the length minus the PID column
+    const updateArray = rowValues.slice(1); 
+    sheet.getRange(Number(materObj.sheetRow), 2, 1, updateArray.length).setValues([updateArray]);
   } else {
+    // New entry: Get Active PID
     const userProperties = PropertiesService.getUserProperties();
     const manageRow = userProperties.getProperty('ACTIVE_PROJECT_ROW');
     const pid = ss.getSheetByName("Manage").getRange(Number(manageRow), 1).getValue();
     
-    // Append [PiD, Item, Qty, TaskName, TaskID, RoomName, RoomID]
-    sheet.appendRow([pid, ...rowValues[0]]);
+    rowValues[cols.PID] = pid;
+    sheet.appendRow(rowValues);
   }
   return getMaterialsData();
 }
 
-/**
- * DELETE MATERIAL
- * Removes the specific row and returns updated data.
- */
 function deleteMaterial(rowIdx) {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = ss.getSheetByName("Materials");
+    const sheet = ss.getSheetByName(CONFIG.TABLES.MATERIALS.NAME);
     const rowToDelete = parseInt(rowIdx, 10);
 
-    // Safety check: ensure sheet exists and row is valid (not header)
     if (!sheet) throw new Error("Materials sheet not found.");
-    if (isNaN(rowToDelete) || rowToDelete < 2 || rowToDelete > sheet.getLastRow()) {
-      throw new Error("Invalid row index: " + rowIdx);
-    }
+    if (isNaN(rowToDelete) || rowToDelete < 2) throw new Error("Invalid row index.");
 
     sheet.deleteRow(rowToDelete);
-    
-    // Return fresh list so UI updates immediately
     return getMaterialsData();
   } catch (e) {
     throw new Error("Delete failed: " + e.toString());
