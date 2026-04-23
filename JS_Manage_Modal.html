@@ -14,13 +14,12 @@ function openEditProjectModal() {
   }
 
   document.getElementById('edit-rowIndex').value = selected.rowIndex;
-  document.getElementById('edit-claim').value = selected.claim;
-  document.getElementById('edit-policy').value = selected.policy;
   document.getElementById('edit-status').value = selected.status;
 
   const modal = new bootstrap.Modal(document.getElementById('editProjectModal'));
   modal.show();
 }
+
 
 function submitEditProject() {
   const btn = document.getElementById('updateBtn');
@@ -28,8 +27,6 @@ function submitEditProject() {
   
   const payload = {
     rowIndex: document.getElementById('edit-rowIndex').value,
-    claim: document.getElementById('edit-claim').value,
-    policy: document.getElementById('edit-policy').value,
     status: document.getElementById('edit-status').value
   };
 
@@ -42,11 +39,13 @@ function submitEditProject() {
     .updateManageRow(payload);
 }
 
+
 function initManagePage() {
   google.script.run
     .withSuccessHandler(populateClientDropdown)
     .getContactCompanies();
 }
+
 
 function populateClientDropdown(companies) {
   const dropdown = document.getElementById('new-client');
@@ -60,12 +59,15 @@ function populateClientDropdown(companies) {
   });
 }
 
+
 function openNewProjectModal() {
   document.getElementById('newProjectForm').reset();
   initManagePage(); 
   const modal = new bootstrap.Modal(document.getElementById('newProjectModal'));
   modal.show();
 }
+
+
 
 function submitNewProject() {
   const btn = document.getElementById('createBtn');
@@ -77,8 +79,6 @@ function submitNewProject() {
 
   const formData = {
     client: client,
-    claim: document.getElementById('new-claim').value,
-    policy: document.getElementById('new-policy').value,
     type: document.getElementById('new-type').value
   };
 
