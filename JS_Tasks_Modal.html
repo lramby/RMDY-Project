@@ -42,35 +42,43 @@
 
 
   function submitTaskEdit() {
-		const btn = document.getElementById('taskSaveBtn');
-		
-		// FIXED: Added missing comma after the 'value' property
-		const taskObj = {
-			sheetRow: document.getElementById('task-row-index').value,
-			taskId: document.getElementById('task-unique-id').value,
-			roomId: document.getElementById('edit-task-room').value,
-			taskName: document.getElementById('edit-task-type').value,
-			value: document.getElementById('edit-task-value').value, // This comma was likely missing
-			unit: "", // Added to match your backend rowArray expectations
-			price: document.getElementById('edit-task-price').value,
-			cost: document.getElementById('edit-task-cost').value,
-			note: document.getElementById('edit-task-note').value
-		};
+    const btn = document.getElementById('taskSaveBtn');
+    
+    // 1. Get the Room Select element
+    const roomSelect = document.getElementById('edit-task-room');
+    
+    // 2. Get the text of the currently selected option
+    // If nothing is selected or it's the default, we use an empty string
+    const selectedRoomName = roomSelect.selectedIndex >= 0 ? 
+                             roomSelect.options[roomSelect.selectedIndex].text : "";
 
-		if (!taskObj.taskName) {
-			alert("Please select a task type.");
-			return;
-		}
+    const taskObj = {
+        sheetRow: document.getElementById('task-row-index').value,
+        taskId: document.getElementById('task-unique-id').value,
+        roomId: roomSelect.value, // This is the ID
+        roomName: selectedRoomName, // <--- Added this to capture the display name
+        taskName: document.getElementById('edit-task-type').value,
+        value: document.getElementById('edit-task-value').value,
+        unit: "", 
+        price: document.getElementById('edit-task-price').value,
+        cost: document.getElementById('edit-task-cost').value,
+        note: document.getElementById('edit-task-note').value
+    };
 
-		btn.disabled = true;
-		google.script.run
-			.withSuccessHandler(function(updatedTasks) {
-				const modalElt = document.getElementById('taskModal');
-				bootstrap.Modal.getInstance(modalElt).hide();
-				btn.disabled = false;
-				showTasks(updatedTasks);
-			})
-			.saveTask(taskObj);
+    if (!taskObj.taskName) {
+        alert("Please select a task type.");
+        return;
+    }
+
+    btn.disabled = true;
+    google.script.run
+        .withSuccessHandler(function(updatedTasks) {
+            const modalElt = document.getElementById('taskModal');
+            bootstrap.Modal.getInstance(modalElt).hide();
+            btn.disabled = false;
+            showTasks(updatedTasks);
+        })
+        .saveTask(taskObj);
 	}
 
   function handleDeleteTask(row) {
