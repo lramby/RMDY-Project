@@ -126,7 +126,7 @@ function getRoomOptionsForTask() {
     if (!rowIndex) return [];
 
     // Force PID to String
-    const pid = String(ss.getSheetByName("Manage").getRange(Number(rowIndex), 1).getValue());
+    const pid = String(ss.getSheetByName("Manage").getRange(Number(rowIndex), 0).getValue());
     
     // Using the new sheet name
     const roomSheet = ss.getSheetByName("Rooms");
