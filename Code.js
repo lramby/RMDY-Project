@@ -159,3 +159,30 @@ function getAssignmentsData() {
     };
   });
 }
+
+function getContactsData() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.CONTACTS.NAME);
+  const values = sheet.getDataRange().getValues();
+  const cols = CONFIG.TABLES.CONTACTS.COLUMNS;
+  
+  // Skip header and map to objects
+  return values.slice(1).map((row, index) => {
+    return {
+      companyName: row[cols.COMPANYNAME],
+			companyCode: row[cols.COMPANYCODE],
+			address1: row[cols.ADDRESS1],
+			address2: row[cols.ADDRESS2],
+			city: row[cols.CITY],
+			zip: row[cols.ZIP],
+			state: row[cols.STATE],
+			country: row[cols.COUNTRY],
+			firstName: row[cols.FIRSTNAME],
+			lastName: row[cols.LASTNAME],
+			middleName: row[cols.MIDDLENAME],
+			role: row[cols.ROLE],
+			email: row[cols.EMAIL],
+			phone: row[cols.PHONE],
+			notes: row[cols.NOTES]
+    };
+  });
+}

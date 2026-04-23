@@ -1,5 +1,6 @@
 <script>
-function openAssignmentModal() {
+
+	function openAssignmentModal() {
     // 1. Load Company Dropdown (Custom Fetch)
     google.script.run.withSuccessHandler(companies => {
       const companySelect = document.getElementById('asgn-company');

@@ -79,6 +79,26 @@ const CONFIG = {
 				PHONE: 7,
 				COMPANYCODE: 8
 			}
+		},
+		CONTACTS: {
+			NAME: "Contacts",
+			COLUMNS: {
+				COMPANYNAME: 0,
+				COMPANYCODE: 1,
+				ADDRESS1: 2,
+				ADDRESS2: 3,
+				CITY: 4,
+				ZIP: 5,
+				STATE: 6,
+				COUNTRY: 7,
+				FIRSTNAME: 8,
+				LASTNAME: 9,
+				MIDDLENAME: 10,
+				ROLE: 11,
+				EMAIL: 12,
+				PHONE: 13,
+				NOTES: 14
+			}
 		}
   },
   PAGES: {
