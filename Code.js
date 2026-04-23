@@ -74,11 +74,12 @@ function getEquipmentData() {
     return {
       rowIndex: index + 2, // 1 for header, 1 for 0-indexing
       pid: row[cols.PID],
+			itemID: row[cols.ITEMID],
 			roomID: row[cols.ROOMID],
 			taskID: row[cols.TASKID],
-      itemID: row[cols.ITEMID],
       roomName: row[cols.ROOMNAME],
       taskName: row[cols.TASKNAME],
+			item: row[cols.ITEM],
       value: row[cols.VALUE],
       unit: row[cols.UNIT],
       price: row[cols.PRICE],
