@@ -89,8 +89,29 @@ function getEquipmentData() {
   });
 }
 
-
-
+function getDetailsData() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.DETAILS.NAME);
+  const values = sheet.getDataRange().getValues();
+  const cols = CONFIG.TABLES.DETAILS.COLUMNS;
+  
+  // Skip header and map to objects
+  return values.slice(1).map((row, index) => {
+    return {
+      rowIndex: index + 2, // 1 for header, 1 for 0-indexing
+      pid: row[cols.PID],
+      address1: row[cols.ADDRESS1],
+      address2: row[cols.ADDRESS2],
+      city: row[cols.CITY],
+      state: row[cols.STATE],
+      zip: row[cols.ZIP],
+      country: row[cols.COUNTRY],
+      customerFirst: row[cols.CUSTOMERFIRST],
+      customerLast: row[cols.CUSTOMERLAST],
+      customerEmail: row[cols.CUSTOMEREMAIL],
+      customerPhone: row[cols.CUSTOMERPHONE]
+    };
+  });
+}
 
 
 

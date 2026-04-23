@@ -56,76 +56,67 @@ function getTasksData() {
   }
 }
 
-function saveTask(taskObj) {
+function saveTaskData(taskObj) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(CONFIG.TABLES.TASKS.NAME);
   const COLS = CONFIG.TABLES.TASKS.COLUMNS;
   
-  const fpSheet = ss.getSheetByName("Floorplans");
-  const fpData = fpSheet.getDataRange().getValues();
-  const roomRow = fpData.slice(1).find(r => String(r[6]) === String(taskObj.roomId));
-  const roomDisplayName = roomRow ? (roomRow[2] ? `${roomRow[1]} (#${roomRow[2]})` : roomRow[1]) : "No Room Assigned";
+  // Create array based on column length defined in your sheet schema
+  const rowArray = new Array(11).fill("");
 
-  let taskId = taskObj.taskId;
-  if (!taskId && taskObj.sheetRow) {
-    // USE CONFIG: TASKID Column
-    taskId = sheet.getRange(Number(taskObj.sheetRow), COLS.TASKID + 1).getValue();
-  }
-  if (!taskId) {
-    taskId = "T-" + new Date().getTime(); 
-  }
+  // Map taskObj values using CONFIG column indices 
+  rowArray[COLS.ROOMID]   = String(taskObj.roomId || "");
+  rowArray[COLS.TASKID]   = String(taskObj.taskId || "");
+  rowArray[COLS.ROOMNAME] = String(taskObj.roomName || "");
+  rowArray[COLS.TASKNAME] = String(taskObj.taskName || "");
+  rowArray[COLS.VALUE]    = Number(taskObj.value) || 0;
+  rowArray[COLS.UNIT]     = String(taskObj.unit || "");
+  rowArray[COLS.PRICE]    = Number(taskObj.price) || 0;
+  rowArray[COLS.COST]     = Number(taskObj.cost) || 0;
+  rowArray[COLS.NOTE]     = String(taskObj.note || "");
 
-  // Map values based on your CONFIG structure
-  // Note: Since setValues() needs a contiguous array, ensure these match your sheet layout
-  const rowValues = [[
-    String(taskObj.taskType), 
-    Number(taskObj.value), 
-    String(roomDisplayName), 
-    String(taskObj.roomId), 
-    String(taskId)
-  ]];
-
-  if (taskObj.sheetRow) {
-    // Starting at Task Column (Col B / Index 1)
-    sheet.getRange(Number(taskObj.sheetRow), COLS.TASK + 1, 1, 5).setValues(rowValues);
-    cascadeRoomNameUpdate(taskObj.roomId, roomDisplayName);
+  if (taskObj.sheetRow && Number(taskObj.sheetRow) >= 2) {
+    // UPDATE: Skip PID (Index 0) to maintain project association
+    const updateRange = rowArray.slice(1); 
+    sheet.getRange(Number(taskObj.sheetRow), 2, 1, updateRange.length).setValues([updateRange]);
   } else {
+    // NEW: Retrieve current Project ID for new task entries
     const userProperties = PropertiesService.getUserProperties();
     const manageRow = userProperties.getProperty('ACTIVE_PROJECT_ROW');
     const pid = ss.getSheetByName("Manage").getRange(Number(manageRow), 1).getValue();
-    sheet.appendRow([pid, ...rowValues[0]]);
+    
+    rowArray[COLS.PID] = pid;
+    sheet.appendRow(rowArray);
   }
   
   return getTasksData();
 }
 
 function deleteTask(rowIdx) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const taskSheet = ss.getSheetByName(CONFIG.TABLES.TASKS.NAME);
-  const COLS = CONFIG.TABLES.TASKS.COLUMNS;
-  const targetRow = Number(rowIdx);
-  
-  // USE CONFIG: TASKID Column
-  const taskId = taskSheet.getRange(targetRow, COLS.TASKID + 1).getValue();
-  
-  const matSheet = ss.getSheetByName("Materials");
-  const matData = matSheet.getDataRange().getValues();
-  const hasMaterials = matData.some(row => String(row[4]).trim() === String(taskId).trim());
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(CONFIG.TABLES.TASKS.NAME);
+    const rowToDelete = parseInt(rowIdx, 10);
 
-  const equipSheet = ss.getSheetByName("Equipment");
-  const equipData = equipSheet.getDataRange().getValues();
-  const hasEquipment = equipData.some(row => String(row[4]).trim() === String(taskId).trim());
+    if (isNaN(rowToDelete) || rowToDelete < 2) {
+      throw new Error("Invalid row index.");
+    }
 
-  if (hasMaterials || hasEquipment) {
-    return { 
-      success: false, 
-      error: "Cannot delete task: It has Materials or Equipment assigned to it." 
-    };
+    sheet.deleteRow(rowToDelete);
+    return getTasksData();
+  } catch (e) {
+    console.error("Delete Task failed: " + e.toString());
+    throw new Error(e.toString());
   }
-
-  safeDeleteRow(CONFIG.TABLES.TASKS.NAME, targetRow);
-  return { success: true };
 }
+
+
+
+
+
+/**======================================
+* Room Backend Functions
+*========================================*/
 
 function getRoomOptionsForTask() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();

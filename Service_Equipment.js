@@ -1,6 +1,7 @@
 /**
  * Service_Equipment.gs
  */
+ 
 function getEquipmentData() {
   try {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -18,37 +19,37 @@ function getEquipmentData() {
 
     return data.slice(1).map((row, index) => {
 
-        const COLS = CONFIG.TABLES.EQUIPMENT.COLUMNS;
+		const COLS = CONFIG.TABLES.EQUIPMENT.COLUMNS;
 
-        // 1. Extract raw numbers for calculation
-        const rawValue = Number(row[COLS.VALUE]) || 0;
-        const rawPrice = Number(row[COLS.PRICE]) || 0;
-        const rawCost  = Number(row[COLS.COST]) || 0;
+			// 1. Extract raw numbers for calculation
+			const rawValue = Number(row[COLS.VALUE]) || 0;
+			const rawPrice = Number(row[COLS.PRICE]) || 0;
+			const rawCost  = Number(row[COLS.COST]) || 0;
 
-        // 2. Perform the math
-        const rawPriceSubTotal = rawValue * rawPrice;
-        const rawCostSubTotal = rawValue * rawCost;
+			// 2. Perform the math
+			const rawPriceSubTotal = rawValue * rawPrice;
+			const rawCostSubTotal = rawValue * rawCost;
 
-        // 3. Return the object with formatted strings
-        return {
-          pid: row[COLS.PID] ? String(row[COLS.PID]) : "",
-          roomId: row[COLS.ROOMID] ? String(row[COLS.ROOMID]) : "",
-          taskId: row[COLS.TASKID] ? String(row[COLS.TASKID]) : "",
-          roomName: row[COLS.ROOMNAME] || "No Room Assigned",
-          taskName: row[COLS.TASKNAME] || "No Task Assigned",
-          item: row[COLS.ITEM] ? String(row[COLS.ITEM]) : "",
-          value: row[COLS.VALUE] || 0,
-          unit: row[COLS.UNIT] ? String(row[COLS.UNIT]) : "",
-          note: row[COLS.NOTE] ? String(row[COLS.NOTE]) : "-",
-   
-          // Formatting via Config
-          price: CONFIG.FORMAT.CURRENCY(rawPrice),
-          cost: CONFIG.FORMAT.CURRENCY(rawCost),
-          priceSubTotal: CONFIG.FORMAT.CURRENCY(rawPriceSubTotal),
-          costSubTotal: CONFIG.FORMAT.CURRENCY(rawCostSubTotal),
+			// 3. Return the object with formatted strings
+			return {
+				pid: row[COLS.PID] ? String(row[COLS.PID]) : "",
+				roomId: row[COLS.ROOMID] ? String(row[COLS.ROOMID]) : "",
+				taskId: row[COLS.TASKID] ? String(row[COLS.TASKID]) : "",
+				roomName: row[COLS.ROOMNAME] || "No Room Assigned",
+				taskName: row[COLS.TASKNAME] || "No Task Assigned",
+				item: row[COLS.ITEM] ? String(row[COLS.ITEM]) : "",
+				value: row[COLS.VALUE] || 0,
+				unit: row[COLS.UNIT] ? String(row[COLS.UNIT]) : "",
+				note: row[COLS.NOTE] ? String(row[COLS.NOTE]) : "-",
 
-          sheetRow: index + 2 
-        };
+				// Formatting via Config
+				price: CONFIG.FORMAT.CURRENCY(rawPrice),
+				cost: CONFIG.FORMAT.CURRENCY(rawCost),
+				priceSubTotal: CONFIG.FORMAT.CURRENCY(rawPriceSubTotal),
+				costSubTotal: CONFIG.FORMAT.CURRENCY(rawCostSubTotal),
+
+				sheetRow: index + 2 
+			};
     }).filter(task => String(task.pid) === String(selectedPid));
   } catch (e) {
     console.error("Error in getTasksData: " + e.toString());
