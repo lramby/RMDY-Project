@@ -1,44 +1,42 @@
 <script>
 
   function openTaskModal(index = null) {
-		loadDropdownCache(() => {
-			const form = document.getElementById('taskEditForm');
-			if (form) form.reset();
-			
-			// 1. Always populate the dropdown first
-			populateSelect('edit-task-type', 'Tasks');
+    loadDropdownCache(() => {
+        const form = document.getElementById('taskEditForm');
+        if (form) form.reset();
+        
+        populateSelect('edit-task-type', 'Tasks');
 
-			if (index !== null) {
-				const task = currentTasks[index];
-				
-				// 2. Set Header and Hidden Inputs
-				document.getElementById('taskModalTitle').innerText = "Edit Task";
-				document.getElementById('task-row-index').value = task.sheetRow;
-				document.getElementById('task-unique-id').value = task.taskId || "";
-				
-				// 3. Set the Task Name (Dropdown Value)
-				// This will only select if task.taskName exactly matches an option value
-				document.getElementById('edit-task-type').value = task.taskName;
+        if (index !== null) {
+            const task = currentTasks[index];
+            document.getElementById('taskModalTitle').innerText = "Edit Task";
+            document.getElementById('task-row-index').value = task.sheetRow;
+            document.getElementById('task-unique-id').value = task.taskId || "";
+            
+            document.getElementById('edit-task-type').value = task.taskName;
+            document.getElementById('edit-task-value').value = task.value;
+            document.getElementById('edit-task-price').value = task.price.replace(/[^0-9.-]+/g,"");
+            document.getElementById('edit-task-cost').value = task.cost.replace(/[^0-9.-]+/g,"");
+            document.getElementById('edit-task-note').value = (task.note === "-" || !task.note) ? "" : task.note;
+            
+            loadRoomDropdown(task.roomId);
+        } else {
+            document.getElementById('taskModalTitle').innerText = "Add New Task";
+            document.getElementById('task-row-index').value = ""; 
 
-				// 4. Set remaining fields
-				document.getElementById('edit-task-value').value = task.value;
-				document.getElementById('edit-task-price').value = task.price.replace(/[^0-9.-]+/g,"");
-				document.getElementById('edit-task-cost').value = task.cost.replace(/[^0-9.-]+/g,"");
-				document.getElementById('edit-task-note').value = (task.note === "-" || !task.note) ? "" : task.note;
-				
-				loadRoomDropdown(task.roomId);
-			} else {
-				document.getElementById('taskModalTitle').innerText = "Add New Task";
-				document.getElementById('task-row-index').value = ""; 
-				document.getElementById('task-unique-id').value = "";
-				document.getElementById('edit-task-value').value = 1; // Default for new tasks
-				loadRoomDropdown(""); 
-			}
+            // --- GENERATE TASK ID JUST LIKE ROOMS ---
+            const newTaskId = 'T-' + Date.now() + Math.floor(Math.random() * 1000);
+            document.getElementById('task-unique-id').value = newTaskId;
+            // ----------------------------------------
 
-			const modalElt = document.getElementById('taskModal');
-			bootstrap.Modal.getOrCreateInstance(modalElt).show();
-		});
-	}
+            document.getElementById('edit-task-value').value = 1;
+            loadRoomDropdown(""); 
+        }
+
+        const modalElt = document.getElementById('taskModal');
+        bootstrap.Modal.getOrCreateInstance(modalElt).show();
+    });
+}
 
 
   function submitTaskEdit() {

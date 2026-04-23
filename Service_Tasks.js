@@ -62,7 +62,7 @@ function saveTask(taskObj) {
   const COLS = CONFIG.TABLES.TASKS.COLUMNS;
   
   // Create array based on column length defined in your sheet schema
-  const rowArray = new Array(11).fill("");
+  const rowArray = new Array(10).fill("");
 
   // Map taskObj values using CONFIG column indices 
   rowArray[COLS.ROOMID]   = String(taskObj.roomId || "");
