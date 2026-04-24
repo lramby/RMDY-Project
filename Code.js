@@ -154,14 +154,14 @@ function getSiteData() {
   return values.slice(1).map((row, index) => {
     return {
 			rowIndex: index + 2, // 1 for header, 1 for 0-indexing
-      PiD: row[cols.PID],
-			Approx Square Feet: row[cols.APPROX SQUARE FEET],
-			Construction Type: row[cols.CONSTRUCTION TYPE],
-			Occupancy: row[cols.OCCUPANCY],
-			Year Built: row[cols.YEAR BUILT],
-			Usage Type: row[cols.USAGE TYPE],
-			Type of Residence: row[cols.TYPE OF RESIDENCE],
-			Basement Selection: row[cols.BASEMENT SELECTION]
+      pid: row[cols.PID],
+			approxArea: row[cols.APPROXAREA],
+			constructionType: row[cols.CONSTRUCTIONTYPE],
+			occupancy: row[cols.OCCUPANCY],
+			yearBuilt: row[cols.YEARBUILT],
+			usageType: row[cols.USAGETYPE],
+			residenceType of Residence: row[cols.RESIDENCETYPE],
+			basement: row[cols.BASEMENT]
     };
   });
 }
