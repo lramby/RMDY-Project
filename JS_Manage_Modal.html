@@ -59,37 +59,19 @@ function populateClientDropdown(companies) {
   });
 }
 
-function populateServiceTypeDropdown(types) {
-  const select = document.getElementById('new-type');
-  if (!select) return;
-  
-  select.innerHTML = '<option value="" disabled selected>Select Service Type...</option>';
-  types.forEach(type => {
-    const opt = document.createElement('option');
-    opt.value = type;
-    opt.textContent = type;
-    select.appendChild(opt);
-  });
-}
+
 
 function openNewProjectModal() {
   const form = document.getElementById('newProjectForm');
-  if (form) form.reset();
-
-  // 1. Fetch Contact Companies (for the Client dropdown)
-  google.script.run
-    .withSuccessHandler(populateClientDropdown)
-    .getContactCompanies();
-
-  // 2. Fetch Service Types (for the Project Type dropdown)
-  google.script.run
-    .withSuccessHandler(populateServiceTypeDropdown)
-    .getServiceTypes();
-
+  if (form) {
+    form.reset(); // This is the line that was crashing
+  } else {
+    console.error("Could not find element with ID: newProjectForm");
+  }
+  
   const modal = new bootstrap.Modal(document.getElementById('newProjectModal'));
   modal.show();
 }
-
 
 
 function submitNewProject() {
