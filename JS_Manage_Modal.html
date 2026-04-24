@@ -4,6 +4,61 @@
  * Handles ONLY the Edit and New Project Modals
  */
 
+function openNewProjectModal() {
+  loadDropdownCache(() => {
+    // 1. Populate the dropdowns using your existing populateSelect helper
+    populateSelect('new-client', 'ContactName');
+    populateSelect('new-type', 'ServiceType');
+
+    // 2. Reset the form
+    const form = document.getElementById('newProjectForm');
+    if (form) {
+      form.reset();
+    } else {
+      console.error("Could not find element with ID: newProjectForm");
+    }
+
+    // 3. Show the Modal
+    const modalEl = document.getElementById('newProjectModal');
+    if (modalEl) {
+      bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
+  });
+}
+
+function submitNewProject() {
+  const btn = document.getElementById('createProjectBtn');
+  const client = document.getElementById('new-client').value;
+  if (!client) { alert("Please select a client."); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating...';
+
+  const formData = {
+    client: client,
+    type: document.getElementById('new-type').value
+  };
+	
+	google.script.run
+    .withSuccessHandler(function(updatedData) {
+      bootstrap.Modal.getInstance(document.getElementById('newProjectModal')).hide();
+      btn.disabled = false;
+      btn.innerText = 'Create Project';
+      renderTable(updatedData);
+    })
+		.createNewProject(formData);
+}
+
+
+
+
+
+
+
+/*============================================
+*Edit Project
+*============================================*/
+
 function openEditProjectModal() {
   // Uses the manageDataList defined in JS_Manage
   const selected = manageDataList.find(item => item.isChecked);
@@ -39,61 +94,4 @@ function submitEditProject() {
     .updateManageRow(payload);
 }
 
-
-function initManagePage() {
-  google.script.run
-    .withSuccessHandler(populateClientDropdown)
-    .getContactCompanies();
-}
-
-
-function populateClientDropdown(companies) {
-  const dropdown = document.getElementById('new-client');
-  if (!dropdown) return;
-  dropdown.innerHTML = '<option value="" selected disabled>Select a client...</option>';
-  companies.forEach(company => {
-    const option = document.createElement('option');
-    option.value = company;
-    option.textContent = company;
-    dropdown.appendChild(option);
-  });
-}
-
-
-
-function openNewProjectModal() {
-  const form = document.getElementById('newProjectForm');
-  if (form) {
-    form.reset(); // This is the line that was crashing
-  } else {
-    console.error("Could not find element with ID: newProjectForm");
-  }
-  
-  const modal = new bootstrap.Modal(document.getElementById('newProjectModal'));
-  modal.show();
-}
-
-
-function submitNewProject() {
-  const btn = document.getElementById('createBtn');
-  const client = document.getElementById('new-client').value;
-  if (!client) { alert("Please select a client."); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Creating...';
-
-  const formData = {
-    client: client,
-    type: document.getElementById('new-type').value
-  };
-
-  google.script.run
-    .withSuccessHandler(function(updatedData) {
-      bootstrap.Modal.getInstance(document.getElementById('newProjectModal')).hide();
-      btn.disabled = false;
-      btn.innerText = 'Create Project';
-      renderTable(updatedData);
-    })
-    .createNewProject(formData);
-}
 </script>

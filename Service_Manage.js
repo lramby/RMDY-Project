@@ -63,17 +63,12 @@ function updateManageRow(payload) {
   return getManageData();
 }
 
-function getContactCompanies() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName("Contacts");
-  if (!sheet) return [];
-  const values = sheet.getDataRange().getValues();
-  const companies = [];
-  for (let i = 1; i < values.length; i++) {
-    if (values[i][0]) companies.push(values[i][0]);
-  }
-  return [...new Set(companies)].sort();
-}
+
+
+
+
+
+
 
 
 
@@ -117,6 +112,16 @@ function createNewProject(formData) {
   webSelectProject(manageSheet.getLastRow());
   return getManageData();
 }
+
+
+
+
+
+
+
+
+
+
 
 
 

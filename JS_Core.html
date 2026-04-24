@@ -22,7 +22,8 @@
 
     // 4. Page Configuration Map (Restored)
     const pageConfig = {
-      'Manage': { title: 'Manage Projects', btn: 'Create Project', action: 'openNewProjectModal()', handler: 'renderTable', server: 'getManageData', icon: '', showBtn: true },
+      'Manage': { title: 'Manage Projects', btn: 'Create Project', action: 'openNewProjectModal()', handler: 'renderTable', server: 'getManageData', icon: '', showBtn: true, id: 'createProjectBtn' },
+			
       'Details': { title: 'Detail List', btn: 'Edit Detail', action: 'openDetailModal()', handler: 'renderDetails', server: 'getDetailsData', icon: 'bi bi-pencil', showBtn: true },
       'Dates': { title: 'Dates List', btn: 'Edit Dates', action: 'openDatesModal()', handler: 'renderDates', server: 'getDatesData', icon: 'bi bi-pencil', showBtn: true },
 			
@@ -51,7 +52,7 @@
         let headerHtml = '';
         if (cfg) {
           const buttonHtml = cfg.showBtn ? `
-            <button class="btn btn-primary btn-sm" onclick="${cfg.action}">
+            <button id="${cfg.id}" class="btn btn-primary btn-sm" onclick="${cfg.action}">
               <i class="${cfg.icon} me-1"></i> ${cfg.btn}
             </button>` : '';
 
