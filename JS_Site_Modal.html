@@ -1,27 +1,45 @@
 <script>
 
+
+setLabel('site-pid', siteInfo.pid);
+    setLabel('display-area', siteInfo.approxArea);
+    setLabel('display-construction-type', siteInfo.constructionType);
+    setLabel('display-occupancy-type', siteInfo.occupancyType);
+    setLabel('display-year-built', siteInfo.yearBuilt);
+    setLabel('display-usage-type', siteInfo.usageType);
+    setLabel('display-residence-type', siteInfo.residenceType);
+    setLabel('display-basement-type', siteInfo.basementType);
+
+
+
+
+/*===========================================
+* Site Modal
+*============================================*/
+
   function openSiteEditModal() {
     if (!currentProjectData) {
       alert("Please select a project first.");
       return;
     }
 
+		//load global dropdowns
     loadDropdownCache(() => {
-      populateSelect('edit-sqft', 'SqFtRange');
-      populateSelect('edit-frame', 'BuildingFrame');
-      populateSelect('edit-occupancy', 'OccupancyStatus');
-      populateSelect('edit-usage', 'PropertyUsage');
-      populateSelect('edit-property-type', 'PropertyType');
-      populateSelect('edit-basement', 'BasementType');
+      populateSelect('edit-area', 'SqFtRange');
+      populateSelect('edit-construction-type', 'BuildingFrame');
+      populateSelect('edit-occupancy-type', 'OccupancyStatus');
+      populateSelect('edit-usage-type', 'PropertyUsage');
+      populateSelect('edit-residence-type', 'PropertyType');
+      populateSelect('edit-basement-type', 'BasementType');
 
       const data = currentProjectData;
-      document.getElementById('edit-sqft').value = data.sqFt || '';
-      document.getElementById('edit-frame').value = data.construction || '';
-      document.getElementById('edit-occupancy').value = data.occupancy || '';
-      document.getElementById('edit-yearBuilt').value = data.yearBuilt || '';
-      document.getElementById('edit-usage').value = data.usage || '';
+      document.getElementById('edit-area').value = data.sqFt || '';
+      document.getElementById('edit-construction-type').value = data.construction || '';
+      document.getElementById('edit-occupancy-type').value = data.occupancy || '';
+      document.getElementById('edit-year-built').value = data.yearBuilt || '';
+      document.getElementById('edit-usage-type').value = data.usage || '';
       document.getElementById('edit-property-type').value = data.residence || '';
-      document.getElementById('edit-basement').value = data.basement || '';
+      document.getElementById('edit-basement-type').value = data.basement || '';
 
       const modalElt = document.getElementById('siteEditModal');
       let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
@@ -35,13 +53,13 @@
     saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
 
     const formData = {
-      sqFt: document.getElementById('edit-sqft').value,
-      construction: document.getElementById('edit-frame').value,
-      occupancy: document.getElementById('edit-occupancy').value,
-      yearBuilt: document.getElementById('edit-yearBuilt').value,
-      usage: document.getElementById('edit-usage').value,
+      sqFt: document.getElementById('edit-area').value,
+      construction: document.getElementById('edit-construction-type').value,
+      occupancy: document.getElementById('edit-occupancy-type').value,
+      yearBuilt: document.getElementById('edit-year-built').value,
+      usage: document.getElementById('edit-usage-type').value,
       residence: document.getElementById('edit-property-type').value,
-      basement: document.getElementById('edit-basement').value
+      basement: document.getElementById('edit-basement-type').value
     };
 
     google.script.run
@@ -57,6 +75,10 @@
       })
       .updateSiteData(formData);
   }
+
+/*===========================================
+* Room Modal
+*============================================*/
 
   function openRoomModal(index = null) {
       const modalElt = document.getElementById('roomModal');

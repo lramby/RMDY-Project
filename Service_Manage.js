@@ -45,32 +45,27 @@ function webSelectProject(rowIndex) {
   return selectedPid;
 }
 
+
+/*============================================
+* Edit a Project
+*============================================*/
+
 function updateManageRow(payload) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("Manage");
   const row = parseInt(payload.rowIndex);
 
+  // Only update the Status column
   sheet.getRange(row, 6).setValue(payload.status);
-  sheet.getRange(row, 7).setValue(payload.policy);
-  sheet.getRange(row, 8).setValue(payload.claim);
-  
-  const pid = sheet.getRange(row, 1).getDisplayValue().trim();
-  const props = PropertiesService.getUserProperties();
-  props.setProperty('ACTIVE_PROJECT_ROW', row.toString());
-  props.setProperty('ACTIVE_PID', pid);
 
   SpreadsheetApp.flush(); 
   return getManageData();
 }
 
 
-
-
-
-
-
-
-
+/*============================================
+* Create a Project
+*============================================*/
 
 function createNewProject(formData) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -114,16 +109,9 @@ function createNewProject(formData) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
+/*============================================
+* Delete a Project
+*============================================*/
 
 function deleteProject(pid) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();

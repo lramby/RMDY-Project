@@ -4,6 +4,10 @@
  * Handles ONLY the Edit and New Project Modals
  */
 
+/*============================================
+* Create a Project
+*============================================*/
+
 function openNewProjectModal() {
   loadDropdownCache(() => {
     // 1. Populate the dropdowns using your existing populateSelect helper
@@ -51,16 +55,11 @@ function submitNewProject() {
 
 
 
-
-
-
-
 /*============================================
-*Edit Project
+* Edit a Project
 *============================================*/
 
-function openEditProjectModal() {
-  // Uses the manageDataList defined in JS_Manage
+function openEditModal() {
   const selected = manageDataList.find(item => item.isChecked);
   
   if (!selected) {
@@ -68,28 +67,43 @@ function openEditProjectModal() {
     return;
   }
 
-  document.getElementById('edit-rowIndex').value = selected.rowIndex;
-  document.getElementById('edit-status').value = selected.status;
+  // Must use DASHES to match the submit function and HTML
+  const rowEl = document.getElementById('edit-row-index');
+  const statusEl = document.getElementById('edit-status');
 
-  const modal = new bootstrap.Modal(document.getElementById('editProjectModal'));
-  modal.show();
+  if (rowEl) rowEl.value = selected.rowIndex;
+  if (statusEl) statusEl.value = selected.status;
+
+  const modalEl = document.getElementById('manageEditModal');
+  if (modalEl) {
+    bootstrap.Modal.getOrCreateInstance(modalEl).show();
+  }
 }
 
+/**
+ * submitManageUpdate
+ */
+function submitManageUpdate() {
+  // Now these match the IDs used in openEditModal above
+  const rowEl = document.getElementById('edit-row-index');
+  const statusEl = document.getElementById('edit-status');
+  const modalEl = document.getElementById('manageEditModal');
 
-function submitEditProject() {
-  const btn = document.getElementById('updateBtn');
-  btn.disabled = true;
-  
+  if (!rowEl || !statusEl) {
+    console.error("Required elements (edit-row-index or edit-status) not found.");
+    return;
+  }
+
   const payload = {
-    rowIndex: document.getElementById('edit-rowIndex').value,
-    status: document.getElementById('edit-status').value
+    rowIndex: rowEl.value,
+    status: statusEl.value
   };
 
   google.script.run
     .withSuccessHandler(function(updatedData) {
-      bootstrap.Modal.getInstance(document.getElementById('editProjectModal')).hide();
-      btn.disabled = false;
-      renderTable(updatedData); 
+      const inst = bootstrap.Modal.getInstance(modalEl);
+      if (inst) inst.hide();
+      renderTable(updatedData);
     })
     .updateManageRow(payload);
 }

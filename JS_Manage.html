@@ -80,12 +80,12 @@
             </div>
 
             <div class="ms-3 d-flex flex-column gap-2">
-              <button class="btn btn-sm btn-outline-primary" 
+              <button id="manageEditBtn" class="btn btn-sm btn-outline-primary" 
                       title="Edit Row"
                       onclick="event.stopPropagation(); openEditModal(${item.rowIndex}, '${item.pid}')">
                 <i class="bi bi-pencil"></i>
               </button>
-              <button class="btn btn-sm btn-outline-danger" 
+              <button id="manageDeleteBtn" class="btn btn-sm btn-outline-danger" 
                       title="Delete Project"
                       onclick="event.stopPropagation(); confirmDelete('${item.pid}', '${item.client}')">
                 <i class="bi bi-trash"></i>
