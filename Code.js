@@ -157,11 +157,11 @@ function getSiteData() {
       pid: row[cols.PID],
 			approxArea: row[cols.APPROXAREA],
 			constructionType: row[cols.CONSTRUCTIONTYPE],
-			occupancy: row[cols.OCCUPANCY],
+			occupancyType: row[cols.OCCUPANCY],
 			yearBuilt: row[cols.YEARBUILT],
 			usageType: row[cols.USAGETYPE],
 			residenceType: row[cols.RESIDENCETYPE],
-			basement: row[cols.BASEMENT]
+			basementType: row[cols.BASEMENT]
     };
   });
 }
