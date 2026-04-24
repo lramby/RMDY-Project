@@ -12,16 +12,13 @@
  */
 function getActiveSiteData() {
   const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = parseInt(userProperties.getProperty('ACTIVE_PROJECT_ROW'));
+  const activePid = userProperties.getProperty('ACTIVE_PROJECT_ID');
   
-  if (!rowIndex) return null;
+  if (!activePid) return null;
 
-  // Use the mapping logic already in Code.gs
-  // Uses CONFIG.TABLES.SITE (singular) internally
   const allSites = getSiteData(); 
-  
-  // Find the site that matches our active project row
-  return allSites.find(site => site.rowIndex === rowIndex) || null;
+  // Filter by PID, not rowIndex
+  return allSites.find(site => String(site.pid) === String(activePid)) || null;
 }
 
 /**
