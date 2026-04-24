@@ -5,15 +5,21 @@
 
 function getAssignmentsDataForActivePid() {
   try {
-    const activePid = getActivePid(); // Logic from Service_Utils
-    if (!activePid) return [];
+    const activePid = getActivePid(); 
+    
+    // Log the PID here so it shows up for both success and failure cases
+    console.log("DEBUG - getAssignmentsDataForActivePid - ActivePid:", activePid);
+
+    if (!activePid) {
+      return [];
+    }
 
     // Use the helper function from Code.gs to get structured data
     const allAssignments = getAssignmentsData(); 
     
     // Filter for the active PID
     return allAssignments.filter(a => String(a.pid) === String(activePid));
-      
+            
   } catch (e) {
     console.error("Error in getAssignmentsDataForActivePid: " + e.toString());
     return [];

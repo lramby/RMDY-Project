@@ -26,22 +26,23 @@ function getFilteredData(sheetName, pidColIdx) {
  */
 function getActivePid() {
   const props = PropertiesService.getUserProperties();
-	
-  // Try to get the PID directly first (it's more reliable than row index)
-  let pid = props.getProperty('ACTIVE_PID');
-  if (pid) {
-		return pid.trim();
-	}else {
-		// Fallback to row index if PID isn't set
-		const ss = SpreadsheetApp.getActiveSpreadsheet();
-		const manageSheet = ss.getSheetByName("Manage");
-		const rowIndex = props.getProperty('ACTIVE_PROJECT_ROW');
-		if (!manageSheet || !rowIndex) return null;
-	}
+  
+  // 1. Primary: Try direct PID
+  const pid = props.getProperty('ACTIVE_PID');
+  if (pid) return pid.trim();
+
+  // 2. Fallback: Try Row Index
+  const rowIndex = props.getProperty('ACTIVE_PROJECT_ROW');
+  if (!rowIndex) return null; // No need to throw if we can just return null
 
   try {
-    return manageSheet.getRange(parseInt(rowIndex), 1).getDisplayValue().trim();
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Manage");
+    if (!sheet) return null;
+
+    return sheet.getRange(parseInt(rowIndex), 1).getDisplayValue().trim();
   } catch (e) {
+    console.error("Error retrieving PID from row: " + e.message);
     return null;
   }
 }

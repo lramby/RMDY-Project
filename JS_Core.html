@@ -24,10 +24,10 @@
     const pageConfig = {
       'Manage': { title: 'Manage Projects', btn: 'Create Project', action: 'openNewProjectModal()', handler: 'renderTable', server: 'getManageData', icon: '', showBtn: true, id: 'createProjectBtn' },
 			
-      'Details': { title: 'Detail List', btn: 'Edit Detail', action: 'openDetailModal()', handler: 'renderDetails', server: 'getDetailsData', icon: 'bi bi-pencil', showBtn: true },
+      'Details': { title: 'Detail List', btn: 'Edit Detail', action: 'openDetailModal()', handler: 'loadDetails', server: 'getDetailsData', icon: 'bi bi-pencil', showBtn: true },
       'Dates': { title: 'Dates List', btn: 'Edit Dates', action: 'openDatesModal()', handler: 'renderDates', server: 'getDatesData', icon: 'bi bi-pencil', showBtn: true },
 			
-      'Assignments': { title: 'Assignments', btn: 'Add Assignment', action: 'openAssignmentModal()', handler: 'renderAssignments', server: 'getAssignmentsData', icon: 'bi bi-pencil', showBtn: true },
+      'Assignments': { title: 'Assignments', btn: 'Add Assignment', action: 'openAssignmentModal()', handler: 'loadAssignments', server: 'getAssignmentsData', icon: 'bi bi-pencil', showBtn: true },
 			
       'Service': { title: 'Service List', btn: 'Edit Service', action: 'openServiceModal()', handler: 'renderService', server: 'getServiceData', icon: 'bi bi-pencil', showBtn: true },
       'Site': { title: 'Site List', btn: 'Edit Site', action: 'openSiteEditModal()', handler: 'renderSite', server: 'getSiteData', icon: 'bi bi-pencil', showBtn: true },

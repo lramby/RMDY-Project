@@ -1,9 +1,4 @@
 <script>
-  let currentAssignments = [];
-
-  function initAssignments() {
-    loadAssignments();
-  }
 
   function loadAssignments() {
     const loader = document.getElementById('assign-loader');
@@ -12,10 +7,11 @@
     if (loader) loader.style.display = 'block';
     if (content) content.style.display = 'none';
     
+    // Direct call to the filtered server function
     google.script.run
       .withSuccessHandler(renderAssignments)
-      .getAssignmentsData();
-  } 
+      .getAssignmentsDataForActivePid(); 
+  }
 
   function renderAssignments(data) {
     const loader = document.getElementById('assign-loader');
@@ -23,37 +19,40 @@
     const tbody = document.getElementById('assign-table-body');
     
     if (loader) loader.style.display = 'none';
-    if (content) content.style.display = 'block';
     
-    currentAssignments = data || [];
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (currentAssignments.length === 0) {
-      tbody.innerHTML = `<tr><td class="text-center text-muted py-4">No team members assigned.</td></tr>`;
+    // If no data returned, handle it gracefully without crashing
+    if (!data || data.length === 0) {
+      if (content) content.style.display = 'block';
+      if (tbody) tbody.innerHTML = `<tr><td class="text-center text-muted py-4">No team members assigned.</td></tr>`;
       return;
     }
     
-    // Inside renderAssignments(data)
-		currentAssignments.forEach((a) => {
-			tbody.insertAdjacentHTML('beforeend', `
-				<tr>
-					<td>
-						<div class="fw-bold text-primary">${a.firstName} ${a.middleName} ${a.lastName}</div>
-						<div class="small"><strong>Role:</strong> ${a.roleName}</div>
-						<div class="small"><strong>Company:</strong> ${a.companyCode}</div>
-						<div class="small text-muted">${a.email} | ${a.phone}</div>
-					</td>
-					<td class="text-end align-middle">
-						<button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditAssignment(${a.rowIndex})">
-							<i class="bi bi-pencil"></i>
-						</button>
-						<button class="btn btn-sm btn-outline-danger" onclick="handleDeleteAssignment(${a.rowIndex})">
-							<i class="bi bi-trash"></i>
-						</button>
-					</td>
-				</tr>`);
-		});
-  }
+    currentAssignments = data;
 
+    if (content) {
+      content.style.display = 'block';
+      if (tbody) {
+        tbody.innerHTML = ''; // Clear existing rows
+        currentAssignments.forEach((a) => {
+          tbody.insertAdjacentHTML('beforeend', `
+            <tr>
+              <td>
+                <div class="fw-bold text-primary">${a.firstName} ${a.middleName || ''} ${a.lastName}</div>
+                <div class="small"><strong>Role:</strong> ${a.roleName}</div>
+                <div class="small"><strong>Company:</strong> ${a.companyCode}</div>
+                <div class="small text-muted">${a.email} | ${a.phone}</div>
+              </td>
+              <td class="text-end align-middle">
+                <button class="btn btn-sm btn-outline-primary me-1" onclick="handleEditAssignment(${a.rowIndex})">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteAssignment(${a.rowIndex})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>`);
+        });
+      }
+    }
+  }
 </script>

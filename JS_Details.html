@@ -1,4 +1,17 @@
 <script>
+
+	function loadDetails() {
+		const loader = document.getElementById('assign-loader');
+		const content = document.getElementById('assign-content');
+		
+		if (loader) loader.style.display = 'block';
+		if (content) content.style.display = 'none';
+		
+		// Direct call to the filtered server function
+		google.script.run
+			.withSuccessHandler(renderDetails)
+			.getAssignmentsDataForActivePid(); 
+	}
   
   function renderDetails(data) {
     const loader = document.getElementById('loader'), 
