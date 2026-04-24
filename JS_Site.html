@@ -1,54 +1,53 @@
 <script>
 
-/*=======================================
-* Site Functions
-*=======================================*/
-
   function renderSite(data) {
-    const loader = document.getElementById('site-loader'), 
-          content = document.getElementById('site-content'), 
-          noSel = document.getElementById('site-no-selection');
-    
-    if (loader) loader.style.display = 'none';
-    
-    if (!data) { 
-      if (noSel) noSel.style.display = 'block'; 
-      if (content) content.style.display = 'none';
-      return; 
-    }
-    
-    currentProjectData = data; 
+  console.log("DEBUG - Received Data:", data);
+  
+  const loader = document.getElementById('site-loader');
+  const content = document.getElementById('site-content');
+  
+  if (loader) loader.style.display = 'none';
+  if (!data) return;
 
-    if (content) {
-      content.style.display = 'block';
-      if (noSel) noSel.style.display = 'none';
-
-      // Helper matching your Details pattern
-      const setLabel = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val || '---';
-      };
-
-      setLabel('site-pid', data.pid);
-      setLabel('display-area', data.approxArea);
-      setLabel('display-construction-type', data.constructionType);
-      setLabel('display-occupancy-type', data.occupancyType);
-      setLabel('display-year-built', data.yearBuilt);
-      setLabel('display-usage-type', data.usageType);
-      setLabel('display-residence-type', data.residenceType);
-      setLabel('display-basement-type', data.basementType);
-      
-      loadRooms(); // Standard function call
-    }
+  // --- THE SQUASH FIX ---
+  // Take the array and merge all objects into one siteInfo object
+  let siteInfo = {};
+  if (Array.isArray(data)) {
+    data.forEach(obj => {
+      // This merges properties from all rows found
+      siteInfo = { ...siteInfo, ...obj };
+    });
+  } else {
+    siteInfo = data;
   }
 
+  if (content) {
+    content.style.display = 'block';
+    document.getElementById('site-no-selection').style.display = 'none';
+    
+    const setLabel = (id, val) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = val || '---';
+    };
 
-/*=======================================
-* Rooms Functions
-*=======================================*/
+    // Use the merged siteInfo
+    setLabel('site-pid', siteInfo.pid);
+    setLabel('display-area', siteInfo.approxArea);
+    setLabel('display-construction-type', siteInfo.constructionType);
+    setLabel('display-occupancy-type', siteInfo.occupancyType);
+    setLabel('display-year-built', siteInfo.yearBuilt);
+    setLabel('display-usage-type', siteInfo.usageType);
+    setLabel('display-residence-type', siteInfo.residenceType);
+    setLabel('display-basement-type', siteInfo.basementType);
+    
+    loadRooms();
+  }
+}
 
   function loadRooms() {
-    google.script.run.withSuccessHandler(renderRooms).getActiveRoomData();
+    google.script.run
+      .withSuccessHandler(renderRooms)
+      .getActiveRoomData();
   }
 
   function renderRooms(rooms) {
@@ -58,32 +57,30 @@
     tbody.innerHTML = '';
 
     if (currentRooms.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No rooms recorded.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted py-4">No rooms recorded.</td></tr>';
       return;
     }
 
-    //card version
-    currentRooms.forEach((room, index) => {
+    currentRooms.forEach((room) => {
       const area = (parseFloat(room.length || 0) * parseFloat(room.width || 0)).toFixed(2);
       tbody.insertAdjacentHTML('beforeend', `
         <tr>
           <td>
-            <table>
-              <tr>
-                <td><strong>${room.roomName} ${room.roomNumber || ''}</strong></td>
-              </tr>
-              <tr>
-                <td>L${room.length}${room.lengthUnit} x W${room.width}${room.widthUnit} x H${room.height}${room.heightUnit} = ${area}SQ</td>
-              </tr>
-            </table>
+            <div class="fw-bold">${room.roomName} ${room.roomNumber || ''}</div>
+            <div class="small text-muted">
+              L${room.length}${room.lengthUnit} x W${room.width}${room.widthUnit} x H${room.height}${room.heightUnit} = ${area} SQ
+            </div>
           </td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-primary me-1" onclick="openRoomModal(${index})"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteRoom(${room.sheetRow})"><i class="bi bi-trash"></i></button>
+          <td class="text-end align-middle">
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="openRoomModalByRow(${room.rowIndex})">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="handleDeleteRoom(${room.rowIndex})">
+              <i class="bi bi-trash"></i>
+            </button>
           </td>
         </tr>
       `);
     });
   }
-
 </script>

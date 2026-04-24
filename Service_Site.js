@@ -1,52 +1,56 @@
 /**
  * Service_Site.gs 
- * Aligned with CONFIG.TABLES.SITE (singular)
  */
 
 /*=======================================
  * Site Functions
  *=======================================*/
 
-/**
- * Retrieves the specific site data for the active project row.
- */
 function getActiveSiteData() {
-  const userProperties = PropertiesService.getUserProperties();
-  const activePid = userProperties.getProperty('ACTIVE_PROJECT_ID');
-  
-  if (!activePid) return null;
+  try {
+    const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_PID');
+    if (!activePid) return null;
 
-  const allSites = getSiteData(); 
-  // Filter by PID, not rowIndex
-  return allSites.find(site => String(site.pid) === String(activePid)) || null;
+    // This currently returns the FULL Array you see in your Debug log
+    const allSites = getSiteData(); 
+    
+    // FIND the specific project object that matches the current PID
+    const match = allSites.find(s => String(s.pid).trim() === String(activePid).trim());
+    
+    // Return just the matching object. If no match, return a skeleton with the PID.
+    return match || { pid: activePid, isNew: true };
+    
+  } catch (e) {
+    console.error("Error in getActiveSiteData: " + e.toString());
+    return null;
+  }
 }
 
-/**
- * Updates Site data using the form data from the UI.
- */
 function updateSiteData(formData) {
-  const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = parseInt(userProperties.getProperty('ACTIVE_PROJECT_ROW'));
-  const activePid = userProperties.getProperty('ACTIVE_PROJECT_ID');
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(CONFIG.TABLES.SITE.NAME);
+  const cols = CONFIG.TABLES.SITE.COLUMNS;
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
   
-  // Alignment: Using singular SITE key from Config
-  const COLS = CONFIG.TABLES.SITE.COLUMNS;
+  // Find the existing row for this project
+  const allSites = getSiteData();
+  const existing = allSites.find(s => String(s.pid).trim() === String(activePid).trim());
+  
+  // If it exists, use that row. If not, go to the bottom.
+  const targetRow = existing ? existing.rowIndex : sheet.getLastRow() + 1;
 
-  if (!rowIndex || !activePid) throw new Error("Missing Project Reference");
-
-  // Prepare flat array for the spreadsheet using CONFIG indices
   const rowArray = [];
-  rowArray[COLS.PID] = activePid;
-  rowArray[COLS.APPROXAREA] = formData.approxArea;
-  rowArray[COLS.CONSTRUCTIONTYPE] = formData.constructionType;
-  rowArray[COLS.OCCUPANCYTYPE] = formData.occupancyType;
-  rowArray[COLS.YEARBUILT] = formData.yearBuilt;
-  rowArray[COLS.USAGETYPE] = formData.usageType;
-  rowArray[COLS.RESIDENCETYPE] = formData.residenceType;
-  rowArray[COLS.BASEMENTTYPE] = formData.basementType;
+  rowArray[cols.PID] = activePid;
+  rowArray[cols.APPROXAREA] = formData.approxArea;
+  rowArray[cols.CONSTRUCTIONTYPE] = formData.constructionType;
+  rowArray[cols.OCCUPANCYTYPE] = formData.occupancyType;
+  rowArray[cols.YEARBUILT] = formData.yearBuilt;
+  rowArray[cols.USAGETYPE] = formData.usageType;
+  rowArray[cols.RESIDENCETYPE] = formData.residenceType;
+  rowArray[cols.BASEMENTTYPE] = formData.basementType;
 
-  // Save via the universal helper using the singular SITE name
-  saveCommonData(CONFIG.TABLES.SITE.NAME, rowIndex, rowArray);
+  // Write the data to the specific row
+  sheet.getRange(targetRow, 1, 1, rowArray.length).setValues([rowArray]);
   
   return getActiveSiteData();
 }
@@ -55,33 +59,19 @@ function updateSiteData(formData) {
  * Rooms Functions
  *=======================================*/
 
-/**
- * Retrieves all rooms filtered by the active Project ID.
- */
 function getActiveRoomData() {
-  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_PROJECT_ID');
-  if (!activePid) return [];
-
-  // Use the mapping logic already in Code.gs
-  const allRooms = getRoomsData();
-
-  // Filter to only show rooms for this project
-  return allRooms.filter(room => String(room.pid).trim() === String(activePid).trim());
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
+  const allRooms = getRoomsData(); // Pulls from the helper in Code.gs
+  return allRooms.filter(room => String(room.pid) === String(activePid));
 }
 
-/**
- * Saves/Appends a room and triggers the name cascade.
- */
 function saveRoomData(roomObj) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.ROOMS.NAME);
   const COLS = CONFIG.TABLES.ROOMS.COLUMNS;
-  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_PROJECT_ID');
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
 
-  // 1. Manage RoomID
   let roomId = roomObj.roomID || (activePid + "-" + new Date().getTime());
-  const newDisplayName = roomObj.roomNumber ? `${roomObj.roomName} (#${roomObj.roomNumber})` : roomObj.roomName;
-
-  // 2. Map object to row array using CONFIG
+  
   const rowArray = [];
   rowArray[COLS.PID] = activePid;
   rowArray[COLS.ROOMNAME] = roomObj.roomName;
@@ -96,12 +86,17 @@ function saveRoomData(roomObj) {
 
   if (roomObj.rowIndex && Number(roomObj.rowIndex) >= 2) {
     sheet.getRange(Number(roomObj.rowIndex), 1, 1, rowArray.length).setValues([rowArray]);
-    if (typeof cascadeRoomNameUpdate === 'function') {
-       cascadeRoomNameUpdate(roomId, newDisplayName);
-    }
   } else {
     sheet.appendRow(rowArray);
   }
   
+  return getActiveRoomData();
+}
+
+function handleDeleteRoom(rowIdx) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.ROOMS.NAME);
+  if (parseInt(rowIdx) >= 2) {
+    sheet.deleteRow(parseInt(rowIdx));
+  }
   return getActiveRoomData();
 }

@@ -1,46 +1,102 @@
-<script>
-  /**
-   * Populates the Service List UI
-   */
-  function renderService(data) {
-    const loader = document.getElementById('service-loader'), 
-          content = document.getElementById('service-content'), 
-          noSel = document.getElementById('service-no-selection');
-          
-    if (loader) loader.style.display = 'none';
-    
-    if (!data) { 
-      if (noSel) reserve.style.display = 'block'; 
-      if (content) content.style.display = 'none';
-      return; 
-    }
-    
-    // Use the global variable shared across pages
-    currentProjectData = data;
+/**
+ * Service_Site.gs 
+ */
 
-    if (noSel) noSel.style.display = 'none';
+/*=======================================
+ * Site Functions
+ *=======================================*/
+
+function getActiveSiteData() {
+  try {
+    const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
+    if (!activePid) return null;
+
+    // This currently returns the FULL Array you see in your Debug log
+    const allSites = getSiteData(); 
     
-    if (content) {
-      content.style.display = 'block';
-      const val = (v) => v || '---';
-
-      // Safety helper
-      const safeSet = (id, text) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = text;
-      };
-
-      safeSet('service-pid', val(data.pid));
-      safeSet('display-service-type', val(data.serviceType));
-      safeSet('display-setup', val(data.setup));
-      safeSet('display-takedown', val(data.takedown));
-      safeSet('display-monitor', val(data.monitor));
-      safeSet('display-drivetime', val(data.drivetime));
-      safeSet('display-thermal', val(data.thermal));
-      safeSet('display-fog', val(data.fog));
-      safeSet('display-description', val(data.description));
-    }
+    // FIND the specific project object that matches the current PID
+    const match = allSites.find(s => String(s.pid).trim() === String(activePid).trim());
+    
+    // Return just the matching object. If no match, return a skeleton with the PID.
+    return match || { pid: activePid, isNew: true };
+    
+  } catch (e) {
+    console.error("Error in getActiveSiteData: " + e.toString());
+    return null;
   }
+}
 
+function updateSiteData(formData) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(CONFIG.TABLES.SITE.NAME);
+  const cols = CONFIG.TABLES.SITE.COLUMNS;
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
   
-</script>
+  // Find the existing row for this project
+  const allSites = getSiteData();
+  const existing = allSites.find(s => String(s.pid).trim() === String(activePid).trim());
+  
+  // If it exists, use that row. If not, go to the bottom.
+  const targetRow = existing ? existing.rowIndex : sheet.getLastRow() + 1;
+
+  const rowArray = [];
+  rowArray[cols.PID] = activePid;
+  rowArray[cols.APPROXAREA] = formData.approxArea;
+  rowArray[cols.CONSTRUCTIONTYPE] = formData.constructionType;
+  rowArray[cols.OCCUPANCYTYPE] = formData.occupancyType;
+  rowArray[cols.YEARBUILT] = formData.yearBuilt;
+  rowArray[cols.USAGETYPE] = formData.usageType;
+  rowArray[cols.RESIDENCETYPE] = formData.residenceType;
+  rowArray[cols.BASEMENTTYPE] = formData.basementType;
+
+  // Write the data to the specific row
+  sheet.getRange(targetRow, 1, 1, rowArray.length).setValues([rowArray]);
+  
+  return getActiveSiteData();
+}
+
+/*=======================================
+ * Rooms Functions
+ *=======================================*/
+
+function getActiveRoomData() {
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
+  const allRooms = getRoomsData(); // Pulls from the helper in Code.gs
+  return allRooms.filter(room => String(room.pid) === String(activePid));
+}
+
+function saveRoomData(roomObj) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.ROOMS.NAME);
+  const COLS = CONFIG.TABLES.ROOMS.COLUMNS;
+  const activePid = PropertiesService.getUserProperties().getProperty('ACTIVE_ID');
+
+  let roomId = roomObj.roomID || (activePid + "-" + new Date().getTime());
+  
+  const rowArray = [];
+  rowArray[COLS.PID] = activePid;
+  rowArray[COLS.ROOMNAME] = roomObj.roomName;
+  rowArray[COLS.ROOMNUMBER] = roomObj.roomNumber;
+  rowArray[COLS.LENGTH] = roomObj.length;
+  rowArray[COLS.WIDTH] = roomObj.width;
+  rowArray[COLS.HEIGHT] = roomObj.height;
+  rowArray[COLS.ROOMID] = roomId;
+  rowArray[COLS.LENGTHUNIT] = roomObj.lengthUnit || "ft";
+  rowArray[COLS.WIDTHUNIT] = roomObj.widthUnit || "ft";
+  rowArray[COLS.HEIGHTUNIT] = roomObj.heightUnit || "ft";
+
+  if (roomObj.rowIndex && Number(roomObj.rowIndex) >= 2) {
+    sheet.getRange(Number(roomObj.rowIndex), 1, 1, rowArray.length).setValues([rowArray]);
+  } else {
+    sheet.appendRow(rowArray);
+  }
+  
+  return getActiveRoomData();
+}
+
+function handleDeleteRoom(rowIdx) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.TABLES.ROOMS.NAME);
+  if (parseInt(rowIdx) >= 2) {
+    sheet.deleteRow(parseInt(rowIdx));
+  }
+  return getActiveRoomData();
+}

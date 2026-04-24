@@ -1,96 +1,197 @@
 <script>
-let manageDataList = []; 
+  // Global list to hold the master copy of data for filtering
+  let manageDataList = []; 
 
-function filterProjects() {
-  const query = document.getElementById('projectSearch').value.toLowerCase();
-  
-  // Filter the original list based on Client name, PID, or Claim number
-  const filteredData = manageDataList.filter(item => {
-    return (
-      item.client.toLowerCase().includes(query) ||
-      item.pid.toLowerCase().includes(query) ||
-      (item.claim && item.claim.toLowerCase().includes(query))
-    );
-  });
+  /**
+   * INITIALIZE
+   * Called when the Manage section is loaded
+   */
+  function initManage() {
+    google.script.run
+      .withSuccessHandler(renderTable)
+      .getManageData();
+  }
 
-  // Re-run the render function with the subset of data
-  renderFilteredTable(filteredData);
-}
-
-// A slightly modified render function for filtering 
-// so we don't overwrite the global manageDataList while searching
-function renderFilteredTable(data) {
-  const tbody = document.getElementById('table-body');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  
-  data.forEach(item => {
-    const row = document.createElement('tr');
-    if (item.isChecked) row.classList.add('selected-row');
-
-    row.onclick = () => handleRowSelection(row, item.rowIndex, item.pid);
-
-    row.innerHTML = `
-      <td class="p-3">
-        <div class="d-flex align-items-center mb-1">
-          <span class="fs-6 fw-semibold text-dark">${item.client}</span>
-          <span class="badge bg-light text-dark border ms-2 small">${item.type}</span>
-        </div>
-        <div class="d-flex flex-wrap small text-muted">
-          <span class="me-3"><strong>Claim:</strong> ${item.claim || 'N/A'}</span>
-          <span class="me-3"><strong>Policy:</strong> ${item.policy || 'N/A'}</span>
-          <span class="me-3"><strong>Status:</strong> ${item.status}</span>
-          <span class="pid-text"><strong>PID:</strong> ${item.pid}</span>
-        </div>
-      </td>`;
-    tbody.appendChild(row);
-  });
-}
-
-function renderTable(data) {
-  manageDataList = data; 
-  const tbody = document.getElementById('table-body');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  
-  data.forEach(item => {
-    const row = document.createElement('tr');
+  /**
+   * SEARCH & FILTER LOGIC
+   * Filters the master list and updates the UI without fetching from server
+   */
+  function filterProjects() {
+    const query = document.getElementById('projectSearch').value.toLowerCase();
     
-    // Apply the active style if it matches the saved memory
-    if (item.isChecked) row.classList.add('selected-row');
+    const filteredData = manageDataList.filter(item => {
+      return (
+        item.client.toLowerCase().includes(query) ||
+        item.pid.toLowerCase().includes(query) ||
+        (item.claim && item.claim.toLowerCase().includes(query))
+      );
+    });
 
-    // Make the whole row clickable
-    row.onclick = () => handleRowSelection(row, item.rowIndex, item.pid);
+    renderFilteredTable(filteredData);
+  }
 
-    row.innerHTML = `
-      <td class="p-3">
-        <div class="d-flex align-items-center mb-1">
-          <span class="fs-6 fw-semibold text-dark">${item.client}</span>
-          <span class="badge bg-light text-dark border ms-2 small">${item.type}</span>
-        </div>
-        <div class="d-flex flex-wrap small text-muted">
-          <span class="me-3"><strong>Claim:</strong> ${item.claim || 'N/A'}</span>
-          <span class="me-3"><strong>Policy:</strong> ${item.policy || 'N/A'}</span>
-          <span class="me-3"><strong>Status:</strong> ${item.status}</span>
-          <span class="pid-text"><strong>PID:</strong> ${item.pid}</span>
-        </div>
-      </td>`;
-    tbody.appendChild(row);
-  });
-}
+  /**
+   * RENDERING LOGIC
+   */
+  function renderTable(data) {
+    manageDataList = data; // Update the master global list
+    renderFilteredTable(data);
+  }
 
-function handleRowSelection(rowElement, rowIndex, pid) {
-  // 1. Remove blue border from all rows, add to this one
-  document.querySelectorAll('#table-body tr').forEach(r => r.classList.remove('selected-row'));
-  rowElement.classList.add('selected-row');
+  function renderFilteredTable(data) {
+    const tbody = document.getElementById('table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td class="text-center py-4 text-muted">No projects found.</td></tr>';
+      return;
+    }
 
-  // 2. Sync local memory for the "Edit Selected" button
-  manageDataList.forEach(item => {
-    item.isChecked = (item.pid === pid);
-  });
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      row.className = 'align-middle';
+      if (item.isChecked) row.classList.add('selected-row');
 
-  // 3. Save to UserProperties so it persists when you leave the page
-  google.script.run.webSelectProject(rowIndex);
-}
+      // Click row to select as Active Project
+      row.onclick = () => handleRowSelection(row, item.rowIndex, item.pid);
+
+      row.innerHTML = `
+        <td class="p-0"> 
+          <div class="d-flex align-items-center w-100 p-3">
+            <div class="flex-grow-1">
+              <div class="row g-3">
+                
+                <div class="col-12 col-md-6">
+                  <div class="fw-bold text-primary fs-5">${item.client}</div>
+                  <div class="text-muted small">Type: <strong>${item.type}</strong></div>
+                  <div class="small text-muted text-wrap mt-1" style="font-family: monospace;">
+                    PID: ${item.pid}
+                  </div>
+                </div>
+
+                <div class="col-12 col-md-6 border-start">
+                  <div class="mb-1 text-dark">Claim: <span class="fw-bold">${item.claim || 'N/A'}</span></div>
+                  <div class="mb-1 text-dark">Policy: <span class="fw-bold">${item.policy || 'N/A'}</span></div>
+                  <div>Status: <span class="badge bg-info text-dark">${item.status}</span></div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="ms-3 d-flex flex-column gap-2">
+              <button class="btn btn-sm btn-outline-primary" 
+                      title="Edit Row"
+                      onclick="event.stopPropagation(); openEditModal(${item.rowIndex}, '${item.pid}')">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" 
+                      title="Delete Project"
+                      onclick="event.stopPropagation(); confirmDelete('${item.pid}', '${item.client}')">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+
+          </div>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  /**
+   * SELECTION LOGIC
+   * Syncs the selected project across the session
+   */
+  function handleRowSelection(rowElement, rowIndex, pid) {
+    // 1. UI Feedback
+    document.querySelectorAll('#table-body tr').forEach(r => r.classList.remove('selected-row'));
+    rowElement.classList.add('selected-row');
+
+    // 2. Local State Sync
+    manageDataList.forEach(item => {
+      item.isChecked = (item.pid === pid);
+    });
+
+    // 3. Server State Sync
+    google.script.run.webSelectProject(rowIndex);
+  }
+
+  /**
+   * EDIT MODAL LOGIC
+   */
+  function openEditModal(rowIndex, pid) {
+    const item = manageDataList.find(i => i.pid === pid);
+    if (!item) return;
+
+    // Populate Modal Fields
+    document.getElementById('edit-row-index').value = rowIndex;
+    document.getElementById('edit-status').value = item.status;
+    document.getElementById('edit-policy').value = item.policy || '';
+    document.getElementById('edit-claim').value = item.claim || '';
+
+    // Show Modal
+    const modalEl = document.getElementById('manageEditModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+
+  /**
+   * SAVE EDITS
+   */
+  function submitManageUpdate() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
+
+    const payload = {
+      rowIndex: document.getElementById('edit-row-index').value,
+      status: document.getElementById('edit-status').value,
+      policy: document.getElementById('edit-policy').value,
+      claim: document.getElementById('edit-claim').value
+    };
+
+    google.script.run
+      .withSuccessHandler(data => {
+         renderTable(data);
+         const modalEl = document.getElementById('manageEditModal');
+         const modal = bootstrap.Modal.getInstance(modalEl);
+         if (modal) modal.hide();
+         
+         btn.disabled = false;
+         btn.innerHTML = originalText;
+      })
+      .withFailureHandler(err => {
+         alert("Update failed: " + err);
+         btn.disabled = false;
+         btn.innerHTML = originalText;
+      })
+      .updateManageRow(payload);
+  }
+
+  /**
+   * DELETE LOGIC
+   */
+  function confirmDelete(pid, clientName) {
+    if (confirm(`CRITICAL WARNING: This will permanently delete "${clientName}" from Manage and all associated sheets (Dates, Details, Site, etc.).\n\nDo you want to proceed?`)) {
+      
+      // UI feedback during process
+      const tbody = document.getElementById('table-body');
+      if (tbody) tbody.style.opacity = "0.4";
+
+      google.script.run
+        .withSuccessHandler(data => {
+          if (tbody) tbody.style.opacity = "1";
+          renderTable(data);
+        })
+        .withFailureHandler(err => {
+          if (tbody) tbody.style.opacity = "1";
+          alert("Delete failed: " + err);
+        })
+        .deleteProject(pid);
+    }
+  }
 
 </script>

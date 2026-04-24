@@ -7,7 +7,8 @@ function getManageData() {
   const data = sheet.getDataRange().getDisplayValues();
   const props = PropertiesService.getUserProperties();
   
-  // Use PID for the visual check
+  // 1. Get the PID currently saved in memory
+  // Use the key 'ACTIVE_PID' consistently
   const activePid = (props.getProperty('ACTIVE_PID') || "").trim();
 
   return data.slice(1).map((row, i) => {
@@ -19,6 +20,7 @@ function getManageData() {
       status: row[5],
       policy: row[6],
       claim: row[7],
+      // 2. This check now uses 'activePid' which IS defined above
       isChecked: (currentPid === activePid && activePid !== ""), 
       rowIndex: i + 2
     };
@@ -111,5 +113,50 @@ function createNewProject(formData) {
   });
 
   webSelectProject(manageSheet.getLastRow());
+  return getManageData();
+}
+
+
+
+function deleteProject(pid) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const manageSheet = ss.getSheetByName("Manage");
+  const data = manageSheet.getDataRange().getValues();
+  
+  // Find the row index based on PID
+  let rowIndex = -1;
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][0].toString() === pid.toString()) {
+      rowIndex = i + 1;
+      break;
+    }
+  }
+
+  if (rowIndex !== -1) {
+    manageSheet.deleteRow(rowIndex);
+    
+    // Cleanup: If the deleted project was the active one, clear memory
+    const props = PropertiesService.getUserProperties();
+    if (props.getProperty('ACTIVE_PID') === pid) {
+      props.deleteProperty('ACTIVE_PID');
+      props.deleteProperty('ACTIVE_PROJECT_ROW');
+    }
+    
+    // Optional: Delete from linked sheets if you want total cleanup
+    const settingsSheet = ss.getSheetByName("Settings");
+    const linkedSheets = settingsSheet.getDataRange().getValues()
+      .filter(row => row[0] === "LinkedSheet")
+      .map(row => row[1]);
+
+    linkedSheets.forEach(sName => {
+      const s = ss.getSheetByName(sName);
+      if (s) {
+        const sData = s.getDataRange().getValues();
+        for (let j = sData.length - 1; j >= 0; j--) {
+          if (sData[j][0].toString() === pid.toString()) s.deleteRow(j + 1);
+        }
+      }
+    });
+  }
   return getManageData();
 }
