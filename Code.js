@@ -160,7 +160,7 @@ function getSiteData() {
 			occupancy: row[cols.OCCUPANCY],
 			yearBuilt: row[cols.YEARBUILT],
 			usageType: row[cols.USAGETYPE],
-			residenceType of Residence: row[cols.RESIDENCETYPE],
+			residenceType: row[cols.RESIDENCETYPE],
 			basement: row[cols.BASEMENT]
     };
   });
