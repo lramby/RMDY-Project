@@ -1,18 +1,5 @@
 <script>
 
-
-setLabel('site-pid', siteInfo.pid);
-    setLabel('display-area', siteInfo.approxArea);
-    setLabel('display-construction-type', siteInfo.constructionType);
-    setLabel('display-occupancy-type', siteInfo.occupancyType);
-    setLabel('display-year-built', siteInfo.yearBuilt);
-    setLabel('display-usage-type', siteInfo.usageType);
-    setLabel('display-residence-type', siteInfo.residenceType);
-    setLabel('display-basement-type', siteInfo.basementType);
-
-
-
-
 /*===========================================
 * Site Modal
 *============================================*/
@@ -33,13 +20,13 @@ setLabel('site-pid', siteInfo.pid);
       populateSelect('edit-basement-type', 'BasementType');
 
       const data = currentProjectData;
-      document.getElementById('edit-area').value = data.sqFt || '';
-      document.getElementById('edit-construction-type').value = data.construction || '';
-      document.getElementById('edit-occupancy-type').value = data.occupancy || '';
+      document.getElementById('edit-area').value = data.approxArea || '';
+      document.getElementById('edit-construction-type').value = data.constructionType || '';
+      document.getElementById('edit-occupancy-type').value = data.occupancyType || '';
       document.getElementById('edit-year-built').value = data.yearBuilt || '';
-      document.getElementById('edit-usage-type').value = data.usage || '';
-      document.getElementById('edit-property-type').value = data.residence || '';
-      document.getElementById('edit-basement-type').value = data.basement || '';
+      document.getElementById('edit-usage-type').value = data.usageType || '';
+      document.getElementById('edit-property-type').value = data.residenceType || '';
+      document.getElementById('edit-basement-type').value = data.basementType || '';
 
       const modalElt = document.getElementById('siteEditModal');
       let modal = bootstrap.Modal.getInstance(modalElt) || new bootstrap.Modal(modalElt);
@@ -53,13 +40,13 @@ setLabel('site-pid', siteInfo.pid);
     saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Saving...';
 
     const formData = {
-      sqFt: document.getElementById('edit-area').value,
-      construction: document.getElementById('edit-construction-type').value,
-      occupancy: document.getElementById('edit-occupancy-type').value,
+      approxArea: document.getElementById('edit-area').value,
+      constructionType: document.getElementById('edit-construction-type').value,
+      occupancyType: document.getElementById('edit-occupancy-type').value,
       yearBuilt: document.getElementById('edit-year-built').value,
-      usage: document.getElementById('edit-usage-type').value,
-      residence: document.getElementById('edit-property-type').value,
-      basement: document.getElementById('edit-basement-type').value
+      usageType: document.getElementById('edit-usage-type').value,
+      residenceType: document.getElementById('edit-property-type').value,
+      basementType: document.getElementById('edit-basement-type').value
     };
 
     google.script.run

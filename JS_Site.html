@@ -9,7 +9,6 @@
   if (loader) loader.style.display = 'none';
   if (!data) return;
 
-  // --- THE SQUASH FIX ---
   // Take the array and merge all objects into one siteInfo object
   let siteInfo = {};
   if (Array.isArray(data)) {
@@ -43,6 +42,11 @@
     loadRooms();
   }
 }
+
+
+/*===================================
+* Rooms
+*====================================*/
 
   function loadRooms() {
     google.script.run
