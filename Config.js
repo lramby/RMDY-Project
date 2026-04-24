@@ -129,7 +129,7 @@ const CONFIG = {
 				BASEMENT: 7
       }
     },
-		SITES: {
+		SITE: {
       NAME: "Sites",
       COLUMNS: {
         PID: 0,
