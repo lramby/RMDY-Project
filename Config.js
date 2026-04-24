@@ -120,6 +120,19 @@ const CONFIG = {
       NAME: "Rooms",
       COLUMNS: {
         PID: 0,
+				APPROX SQUARE FEET: 1,
+				CONSTRUCTION TYPE: 2,
+				OCCUPANCY: 3,
+				YEAR BUILT: 4,
+				USAGE TYPE: 5,
+				TYPE OF RESIDENCE: 6,
+				BASEMENT SELECTION: 7
+      }
+    },
+		SITES: {
+      NAME: "Sites",
+      COLUMNS: {
+        PID: 0,
 				ROOMNAME: 1,
 				ROOMNUMBER: 2,
 				LENGTH: 3,
@@ -130,7 +143,7 @@ const CONFIG = {
 				WIDTHUNIT: 8,
 				HEIGHTUNIT: 9
       }
-    },
+    }
   },
   PAGES: {
     EQUIPMENT: {
