@@ -130,7 +130,7 @@ const CONFIG = {
       }
     },
 		SITE: {
-      NAME: "Sites",
+      NAME: "Site",
       COLUMNS: {
         PID: 0,
 				ROOMNAME: 1,

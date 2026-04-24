@@ -48,7 +48,7 @@
 *=======================================*/
 
   function loadRooms() {
-    google.script.run.withSuccessHandler(renderRooms).getRoomData();
+    google.script.run.withSuccessHandler(renderRooms).getActiveRoomData();
   }
 
   function renderRooms(rooms) {
@@ -64,16 +64,16 @@
 
     //card version
     currentRooms.forEach((room, index) => {
-      const area = (parseFloat(room.l || 0) * parseFloat(room.w || 0)).toFixed(2);
+      const area = (parseFloat(room.length || 0) * parseFloat(room.width || 0)).toFixed(2);
       tbody.insertAdjacentHTML('beforeend', `
         <tr>
           <td>
             <table>
               <tr>
-                <td><strong>${room.name} ${room.roomNum || ''}</strong></td>
+                <td><strong>${room.nameName} ${room.roomNumber || ''}</strong></td>
               </tr>
               <tr>
-                <td>L${room.l}' x W${room.w}' x H${room.h}' = ${area}SQ</td>
+                <td>L${room.l}' x W${room.width}' x H${room.height}' = ${area}SQ</td>
               </tr>
             </table>
           </td>
