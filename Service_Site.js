@@ -3,6 +3,9 @@
  * Refactored to use CONFIG and Standardized Objects
  */
 
+/*=======================================
+* Site Functions
+*=======================================*/
 /**
  * Retrieves Site (Project Overview) data for the active project row.
  */
@@ -33,14 +36,14 @@ function getSiteData() {
     
     // Map using CONFIG.TABLES.SITES.COLUMNS
     return {
-      pid:          data[COLS.PID] || activePid,
-      sqFt:         data[COLS.APPROX_SQUARE_FEET],
-      construction: data[COLS.CONSTRUCTION_TYPE],
-      occupancy:    data[COLS.OCCUPANCY],
-      yearBuilt:    data[COLS.YEAR_BUILT],
-      usage:        data[COLS.USAGE_TYPE],
-      residence:    data[COLS.TYPE_OF_RESIDENCE],
-      basement:     data[COLS.BASEMENT_SELECTION]
+      pid:         			data[COLS.PID] || activePid,
+      sqFt:         		data[COLS.APPROXAREA],
+      constructionType: data[COLS.CONSTRUCTIONTYPE],
+      occupancy:    		data[COLS.OCCUPANCY],
+      yearBuilt:    		data[COLS.YEARBUILT],
+      usageType:        data[COLS.USAGETYPE],
+      residenceType:    data[COLS.RESIDENCETYPE],
+      basement:     		data[COLS.BASEMENT]
     };
   } catch (e) {
     console.error("Error in getSiteData: " + e.toString());
@@ -48,6 +51,50 @@ function getSiteData() {
   }
 }
 
+/**
+ * Updates Site data based on current project row.
+ */
+function updateSiteData(formData) {
+  const userProperties = PropertiesService.getUserProperties();
+  const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
+  const COLS = CONFIG.TABLES.SITES.COLUMNS;
+  
+  let activePid = userProperties.getProperty('ACTIVE_PROJECT_ID');
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const siteSheet = ss.getSheetByName(CONFIG.TABLES.SITES.NAME);
+  const targetRow = parseInt(rowIndex);
+
+  if (!activePid && rowIndex) {
+    activePid = siteSheet.getRange(targetRow, 1).getValue();
+  }
+  
+  if (!activePid || !rowIndex) {
+    throw new Error("Save Blocked: Missing Project ID reference.");
+  }
+
+  // Map data into the row array
+  const rowArray = [];
+  rowArray[COLS.PID] = activePid;
+  rowArray[COLS.APPROXAREA] = formData.approxArea;
+  rowArray[COLS.CONSTRUCTIONTYPE] = formData.constructionType;
+  rowArray[COLS.OCCUPANCY] = formData.occupancy;
+  rowArray[COLS.YEARBUILT] = formData.yearBuilt;
+  rowArray[COLS.USAGETYPE] = formData.usageType;
+  rowArray[COLS.RESIDENCETYPE] = formData.residenceType;
+  rowArray[COLS.BASEMENT] = formData.basement;
+
+  // Use the helper to save
+  saveCommonData(CONFIG.TABLES.SITES.NAME, targetRow, rowArray);
+  
+  return getSiteData();
+}
+
+
+
+
+/*=======================================
+* Rooms Functions
+*=======================================*/
 /**
  * Retrieves all rooms associated with the active Project ID.
  */
@@ -172,42 +219,4 @@ function deleteRoom(rowIdx) {
   } catch (e) {
     return { success: false, error: "System Error: " + e.toString() };
   }
-}
-
-/**
- * Updates Site data based on current project row.
- */
-function updateSiteData(formData) {
-  const userProperties = PropertiesService.getUserProperties();
-  const rowIndex = userProperties.getProperty('ACTIVE_PROJECT_ROW');
-  const COLS = CONFIG.TABLES.SITES.COLUMNS;
-  
-  let activePid = userProperties.getProperty('ACTIVE_PROJECT_ID');
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const siteSheet = ss.getSheetByName(CONFIG.TABLES.SITES.NAME);
-  const targetRow = parseInt(rowIndex);
-
-  if (!activePid && rowIndex) {
-    activePid = siteSheet.getRange(targetRow, 1).getValue();
-  }
-  
-  if (!activePid || !rowIndex) {
-    throw new Error("Save Blocked: Missing Project ID reference.");
-  }
-
-  // Map data into the row array
-  const rowArray = [];
-  rowArray[COLS.PID] = activePid;
-  rowArray[COLS.APPROX_SQUARE_FEET] = formData.sqFt;
-  rowArray[COLS.CONSTRUCTION_TYPE] = formData.construction;
-  rowArray[COLS.OCCUPANCY] = formData.occupancy;
-  rowArray[COLS.YEAR_BUILT] = formData.yearBuilt;
-  rowArray[COLS.USAGE_TYPE] = formData.usage;
-  rowArray[COLS.TYPE_OF_RESIDENCE] = formData.residence;
-  rowArray[COLS.BASEMENT_SELECTION] = formData.basement;
-
-  // Use the helper to save
-  saveCommonData(CONFIG.TABLES.SITES.NAME, targetRow, rowArray);
-  
-  return getSiteData();
 }

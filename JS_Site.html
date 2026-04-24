@@ -1,5 +1,9 @@
 <script>
 
+/*=======================================
+* Site Functions
+*=======================================*/
+
   function renderSite(data) {
     const loader = document.getElementById('site-loader'), 
           content = document.getElementById('site-content'), 
@@ -26,17 +30,22 @@
       };
 
       setLabel('site-pid', data.pid);
-      setLabel('display-sqft', data.approxArea);
-      setLabel('display-construction', data.constructionType);
+      setLabel('display-approxArea', data.approxArea);
+      setLabel('display-constructionType', data.constructionType);
       setLabel('display-occupancy', data.occupancy);
-      setLabel('display-year', data.yearBuilt);
-      setLabel('display-usage', data.usageType);
-      setLabel('display-residence', data.residenceType);
+      setLabel('display-yearBuilt', data.yearBuilt);
+      setLabel('display-usageType', data.usageType);
+      setLabel('display-residenceType', data.residenceType);
       setLabel('display-basement', data.basement);
       
       loadRooms(); // Standard function call
     }
   }
+
+
+/*=======================================
+* Rooms Functions
+*=======================================*/
 
   function loadRooms() {
     google.script.run.withSuccessHandler(renderRooms).getRoomData();
@@ -75,7 +84,6 @@
         </tr>
       `);
     });
-
   }
 
 </script>
