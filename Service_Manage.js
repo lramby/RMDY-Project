@@ -75,6 +75,23 @@ function getContactCompanies() {
   return [...new Set(companies)].sort();
 }
 
+/**
+ * Fetches unique service types from the ServiceType sheet
+ */
+function getServiceTypes() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("ServiceType");
+  if (!sheet) return ["Restoration", "Mitigation", "Mold"]; // Fallback defaults
+  
+  const values = sheet.getDataRange().getValues();
+  // Assumes Service Type is in the first column (index 0)
+  const types = [];
+  for (let i = 1; i < values.length; i++) {
+    if (values[i][0]) types.push(values[i][0]);
+  }
+  return [...new Set(types)].sort(); 
+}
+
 function createNewProject(formData) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const settingsSheet = ss.getSheetByName("Settings");
