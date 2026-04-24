@@ -175,7 +175,7 @@ function getRoomsData() {
   return values.slice(1).map((row, index) => {
     return {
 			rowIndex: index + 2, // 1 for header, 1 for 0-indexing
-      PiD: row[cols.PID],
+      pid: row[cols.PID],
 			roomName: row[cols.ROOMNAME],
 			roomNumber: row[cols.ROOMNUMBER],
 			length: row[cols.LENGTH],
