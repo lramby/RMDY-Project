@@ -116,21 +116,21 @@ const CONFIG = {
 				NOTE: 10
 			}
 		},
-		ROOMS: {
-      NAME: "Rooms",
+		SITE: {
+      NAME: "Site",
       COLUMNS: {
         PID: 0,
 				APPROXAREA: 1,
 				CONSTRUCTIONTYPE: 2,
-				OCCUPANCY: 3,
+				OCCUPANCYTYPE: 3,
 				YEARBUILT: 4,
 				USAGETYPE: 5,
 				RESIDENCETYPE: 6,
-				BASEMENT: 7
+				BASEMENTTYPE: 7
       }
     },
-		SITE: {
-      NAME: "Site",
+		ROOMS: {
+      NAME: "Rooms",
       COLUMNS: {
         PID: 0,
 				ROOMNAME: 1,
@@ -168,18 +168,18 @@ const CONFIG = {
       scripts: ['JS_Tasks', 'JS_Tasks_Modal'],
       title: 'Tasks'
     },
-	DETAILS: {
-      template: 'Page_Tasks',
-      btn: 'Edit Detail',
-      action: 'openDetailModal()',
-      handler: 'renderDetails',
-      server: 'getDetailsData',   
-      icon: 'bi bi-pencil',
-      showBtn: true,
-      scripts: ['JS_Tasks', 'JS_Tasks_Modal'],
-      title: 'Details'
-    }
-  },
+		DETAILS: {
+				template: 'Page_Tasks',
+				btn: 'Edit Detail',
+				action: 'openDetailModal()',
+				handler: 'renderDetails',
+				server: 'getDetailsData',   
+				icon: 'bi bi-pencil',
+				showBtn: true,
+				scripts: ['JS_Tasks', 'JS_Tasks_Modal'],
+				title: 'Details'
+			}
+		},
   FORMAT: {
     CURRENCY: (val) => {
       const num = Number(val) || 0;

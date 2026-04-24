@@ -150,18 +150,17 @@ function getSiteData() {
   const values = sheet.getDataRange().getValues();
   const cols = CONFIG.TABLES.SITE.COLUMNS;
   
-  // Skip header and map to objects
   return values.slice(1).map((row, index) => {
     return {
-			rowIndex: index + 2, // 1 for header, 1 for 0-indexing
+      rowIndex: index + 2,
       pid: row[cols.PID],
-			approxArea: row[cols.APPROXAREA],
-			constructionType: row[cols.CONSTRUCTIONTYPE],
-			occupancyType: row[cols.OCCUPANCY],
-			yearBuilt: row[cols.YEARBUILT],
-			usageType: row[cols.USAGETYPE],
-			residenceType: row[cols.RESIDENCETYPE],
-			basementType: row[cols.BASEMENT]
+      approxArea: row[cols.APPROXAREA],
+      constructionType: row[cols.CONSTRUCTIONTYPE],
+      occupancyType: row[cols.OCCUPANCYTYPE],
+      yearBuilt: row[cols.YEARBUILT],
+      usageType: row[cols.USAGETYPE],
+      residenceType: row[cols.RESIDENCETYPE],
+      basementType: row[cols.BASEMENTTYPE]
     };
   });
 }
@@ -171,20 +170,19 @@ function getRoomsData() {
   const values = sheet.getDataRange().getValues();
   const cols = CONFIG.TABLES.ROOMS.COLUMNS;
   
-  // Skip header and map to objects
   return values.slice(1).map((row, index) => {
     return {
-			rowIndex: index + 2, // 1 for header, 1 for 0-indexing
+      rowIndex: index + 2,
       pid: row[cols.PID],
-			roomName: row[cols.ROOMNAME],
-			roomNumber: row[cols.ROOMNUMBER],
-			length: row[cols.LENGTH],
-			width: row[cols.WIDTH],
-			height: row[cols.HEIGHT],
-			roomID: row[cols.ROOMID],
-			lengthUnit: row[cols.LENGTHUNIT],
-			widthUnit: row[cols.WIDTHUNIT],
-			heightUnit: row[cols.HEIGHTUNIT]
+      roomName: row[cols.ROOMNAME],
+      roomNumber: row[cols.ROOMNUMBER],
+      length: row[cols.LENGTH],
+      width: row[cols.WIDTH],
+      height: row[cols.HEIGHT],
+      roomID: row[cols.ROOMID],
+      lengthUnit: row[cols.LENGTHUNIT],
+      widthUnit: row[cols.WIDTHUNIT],
+      heightUnit: row[cols.HEIGHTUNIT]
     };
   });
 }

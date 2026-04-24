@@ -42,11 +42,11 @@ function updateSiteData(formData) {
   rowArray[COLS.PID] = activePid;
   rowArray[COLS.APPROXAREA] = formData.approxArea;
   rowArray[COLS.CONSTRUCTIONTYPE] = formData.constructionType;
-  rowArray[COLS.OCCUPANCY] = formData.occupancyType;
+  rowArray[COLS.OCCUPANCYTYPE] = formData.occupancyType;
   rowArray[COLS.YEARBUILT] = formData.yearBuilt;
   rowArray[COLS.USAGETYPE] = formData.usageType;
   rowArray[COLS.RESIDENCETYPE] = formData.residenceType;
-  rowArray[COLS.BASEMENT] = formData.basementType;
+  rowArray[COLS.BASEMENTTYPE] = formData.basementType;
 
   // Save via the universal helper using the singular SITE name
   saveCommonData(CONFIG.TABLES.SITE.NAME, rowIndex, rowArray);
