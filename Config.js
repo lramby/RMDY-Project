@@ -120,13 +120,13 @@ const CONFIG = {
       NAME: "Rooms",
       COLUMNS: {
         PID: 0,
-				APPROX SQUARE FEET: 1,
-				CONSTRUCTION TYPE: 2,
+				APPROXAREA: 1,
+				CONSTRUCTIONTYPE: 2,
 				OCCUPANCY: 3,
-				YEAR BUILT: 4,
-				USAGE TYPE: 5,
-				TYPE OF RESIDENCE: 6,
-				BASEMENT SELECTION: 7
+				YEARBUILT: 4,
+				USAGETYPE: 5,
+				RESIDENCETYPE: 6,
+				BASEMENT: 7
       }
     },
 		SITES: {
