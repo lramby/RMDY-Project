@@ -66,7 +66,11 @@
 				// FIXED: using a.rowIndex
 				document.getElementById('asgn-sheet-row').value = a.rowIndex;
 				document.getElementById('asgn-first').value = a.firstName;
-				// ... (rest of the fields are fine)
+				document.getElementById('asgn-last').value = a.lastName;
+        document.getElementById('asgn-middle').value = a.middleName;
+        document.getElementById('asgn-phone').value = a.phone;
+        document.getElementById('asgn-email').value = a.email;
+        document.getElementById('asgn-company').value = a.companyCode;
 				
 				document.getElementById('asgnModalTitle').innerText = "Edit Team Member";
 				bootstrap.Modal.getOrCreateInstance(document.getElementById('assignmentModal')).show();

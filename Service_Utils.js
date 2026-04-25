@@ -1,27 +1,4 @@
 /**
- * UNIVERSAL FETCHER: Enhanced with Pre-Flight Check
- */
-function getFilteredData(sheetName, pidColIdx) {
-  const activePid = getActivePid();
-  if (!activePid) return [];
-
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(sheetName);
-
-  // PRE-FLIGHT GUARD
-  if (!sheet || sheet.getLastRow() === 0) return [];
-
-  // If there is only 1 row (the header), return empty
-  if (sheet.getLastRow() === 1) return [];
-
-  const data = sheet.getDataRange().getValues();
-
-  return data.slice(1)
-    .map((row, index) => ({ data: row, rowIdx: index + 2 }))
-    .filter(obj => String(obj.data[pidColIdx]) === String(activePid));
-}
-
-/**
  * Service_Utils.gs
  */
 function getActivePid() {
@@ -44,6 +21,38 @@ function getActivePid() {
   } catch (e) {
     console.error("Error retrieving PID from row: " + e.message);
     return null;
+  }
+}
+
+/**
+ * UNIVERSAL FETCHER: Enhanced with Pre-Flight Check
+ */
+function getFilteredData(sheetName, pidColIdx) {
+	try {
+  const activePid = getActivePid();
+	
+	// Log the PID here so it shows up for both success and failure cases
+    console.log("DEBUG - getFilteredData - ActivePid:", activePid);
+		
+  if (!activePid) return [];
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(sheetName);
+
+  // PRE-FLIGHT GUARD
+  if (!sheet || sheet.getLastRow() === 0) return [];
+
+  // If there is only 1 row (the header), return empty
+  if (sheet.getLastRow() === 1) return [];
+
+  const data = sheet.getDataRange().getValues();
+
+  return data.slice(1)
+    .map((row, index) => ({ data: row, rowIdx: index + 2 }))
+    .filter(obj => String(obj.data[pidColIdx]) === String(activePid));
+	} catch (e) {
+    console.error("Error in getFilteredData: " + e.toString());
+    return [];
   }
 }
 

@@ -1,17 +1,4 @@
 <script>
-
-	function loadDetails() {
-		const loader = document.getElementById('assign-loader');
-		const content = document.getElementById('assign-content');
-		
-		if (loader) loader.style.display = 'block';
-		if (content) content.style.display = 'none';
-		
-		// Direct call to the filtered server function
-		google.script.run
-			.withSuccessHandler(renderDetails)
-			.getAssignmentsDataForActivePid(); 
-	}
   
   function renderDetails(data) {
     const loader = document.getElementById('loader'), 
@@ -40,7 +27,7 @@
 
       setEl('display-pid', data.pid);
       setEl('display-address', `${data.address1 || ''} ${data.address2 || ''}`.trim());
-      setEl('display-location', `${data.city || ''} ${data.state ? ", ${data.state}" : ''} ${data.zip || ''}, ${data.country || ''}`.trim());
+      setEl('display-location', `${data.city || ''}${data.state ? `, ${data.state}` : ''} ${data.zip || ''}, ${data.country || ''}`.trim());
       setEl('display-email', data.email);
       setEl('display-customer', `${data.firstName || ''} ${data.lastName || ''}`.trim());
       setEl('display-phone', data.phone);

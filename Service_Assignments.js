@@ -3,23 +3,38 @@
  * Refactored to use CONFIG object and Helper functions.
  */
 
+/**
+ * Gets assignemnt data and converts it from array to object
+ */
 function getAssignmentsDataForActivePid() {
   try {
-    const activePid = getActivePid(); 
-    
-    // Log the PID here so it shows up for both success and failure cases
+    const activePid = getActivePid();
     console.log("DEBUG - getAssignmentsDataForActivePid - ActivePid:", activePid);
-
-    if (!activePid) {
-      return [];
-    }
-
-    // Use the helper function from Code.gs to get structured data
-    const allAssignments = getAssignmentsData(); 
     
-    // Filter for the active PID
-    return allAssignments.filter(a => String(a.pid) === String(activePid));
-            
+    if (!activePid) return [];
+
+    // 1. FETCH & FILTER (using your Universal Utility)
+    // We assume PID is in Column A (index 0)
+    const rawMatches = getFilteredData(CONFIG.TABLES.ASSIGNMENTS.NAME, 0); 
+
+    // 2. MAP (Transforming the data for the UI)
+    const cols = CONFIG.TABLES.ASSIGNMENTS.COLUMNS;
+    
+    return rawMatches.map(obj => {
+      const row = obj.data;
+      return {
+        rowIndex: obj.rowIdx,
+        pid: row[cols.PID],
+        roleName: row[cols.ROLENAME],
+        firstName: row[cols.FIRSTNAME],
+        middleName: row[cols.MIDDLENAME],
+        lastName: row[cols.LASTNAME],
+        email: row[cols.EMAIL],
+        phone: row[cols.PHONE],
+        companyCode: row[cols.COMPANYCODE]
+      };
+    });
+
   } catch (e) {
     console.error("Error in getAssignmentsDataForActivePid: " + e.toString());
     return [];

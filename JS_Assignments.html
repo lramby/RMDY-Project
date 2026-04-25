@@ -6,10 +6,15 @@
     
     if (loader) loader.style.display = 'block';
     if (content) content.style.display = 'none';
-    
-    // Direct call to the filtered server function
+
+    // Talk to the server
     google.script.run
       .withSuccessHandler(renderAssignments)
+      .withFailureHandler(function(err) {
+         console.error("Frontend Error:", err);
+         if (loader) loader.style.display = 'none';
+         // Handle error UI here
+      })
       .getAssignmentsDataForActivePid(); 
   }
 
